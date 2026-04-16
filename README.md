@@ -1,2 +1,0 @@
-# Hackathon-datssol
-just play 
