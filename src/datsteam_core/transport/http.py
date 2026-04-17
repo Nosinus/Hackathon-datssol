@@ -113,6 +113,7 @@ class HttpTransport:
         *,
         retryable: bool,
         timeout_seconds: float | None = None,
+        allow_error_status: bool = False,
     ) -> Any:
         request_headers = dict(self.default_headers)
         if self.accept_gzip:
@@ -154,7 +155,7 @@ class HttpTransport:
                     )
                     continue
 
-                if response.status_code >= 400:
+                if response.status_code >= 400 and not allow_error_status:
                     raise TransportHttpStatusError(
                         f"HTTP {response.status_code} for {method} {path}",
                         method=method,
@@ -164,9 +165,7 @@ class HttpTransport:
                         response_text=response.text[:300],
                     )
 
-                payload = self._parse_json_payload(
-                    response, method=method, path=path, attempt=attempt
-                )
+                payload = self._parse_json_payload(response, method=method, path=path, attempt=attempt)
                 return payload
             except httpx.TimeoutException:
                 last_error = TransportTimeoutError(
@@ -290,5 +289,12 @@ class HttpTransport:
         path: str,
         *,
         timeout_seconds: float | None = None,
+        allow_error_status: bool = False,
     ) -> Any:
-        return self._request("GET", path, retryable=True, timeout_seconds=timeout_seconds)
+        return self._request(
+            "GET",
+            path,
+            retryable=True,
+            timeout_seconds=timeout_seconds,
+            allow_error_status=allow_error_status,
+        )

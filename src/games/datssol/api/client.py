@@ -70,6 +70,7 @@ class DatsSolClient:
         raw = self.transport.get_json(
             "/api/logs",
             timeout_seconds=self.timeout_policy.logs_timeout(),
+            allow_error_status=True,
         )
         parsed = LogsOrError.from_api_payload(raw)
         self.trace.append({"endpoint": "/api/logs", "method": "GET", "ok": True})

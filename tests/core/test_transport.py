@@ -170,3 +170,19 @@ def test_transport_uses_longer_connect_timeout_for_gets(monkeypatch: pytest.Monk
     assert isinstance(captured["timeout"], httpx.Timeout)
     assert captured["timeout"].connect == 5.0
     assert captured["timeout"].read == 0.6
+
+
+def test_transport_can_return_json_for_http_error_when_allowed(monkeypatch: pytest.MonkeyPatch) -> None:
+    request = httpx.Request("GET", "https://example.test/api/logs")
+    response = httpx.Response(
+        400,
+        json={"code": 3, "errors": ["you are not registered in the game, please register first"]},
+        request=request,
+    )
+    _patch_client(monkeypatch, response)
+
+    transport = HttpTransport(base_url="https://example.test", default_headers={})
+    payload = transport.get_json("/api/logs", allow_error_status=True)
+
+    assert payload["code"] == 3
+    assert payload["errors"]
