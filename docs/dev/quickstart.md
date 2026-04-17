@@ -18,6 +18,7 @@ cp .env.example .env
 make lint
 make typecheck
 make test
+python -m scripts.check_contract_consistency
 ```
 
 ## 4. Run offline multi-tick fixture evaluation

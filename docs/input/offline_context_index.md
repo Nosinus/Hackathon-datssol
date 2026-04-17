@@ -17,12 +17,12 @@ Use these files to bootstrap a repository that is:
 2. `docs/input/datssol_event_snapshot_2026-04-16.md` — what is publicly known about the upcoming event.
 3. `docs/input/datsteam_architecture_implications_for_codex.md` — distilled engineering consequences across all sources.
 4. `docs/input/datsblack_truth_table_and_mechanics.md` — the richest prior for a real Datsteam competition loop.
-5. `docs/input/datsblack_openapi_reference.md` — wire-level contract summary extracted from `openapi.json`.
+5. `docs/input/datsblack_openapi_reference.md` — wire-level contract summary extracted from `datsblack_openapi.json`.
 6. `docs/input/snake3d_warmup_summary.md` — organizer-style prior from the warm-up game.
 7. `docs/input/research_memo_highlights.md` — condensed guidance from the research memo.
 8. `docs/input/questions_for_datsol_release.md` — what is still missing and must stay isolated behind interfaces.
 9. Raw source files only if needed:
-   - `openapi.json`
+   - `datsblack_openapi.json`
    - `Геймтон DatsBlack .docx`
    - `doc.pdf`
    - `Исследование стратегии участия в HTTP_JSON-соревновании агентов.docx`
@@ -30,7 +30,7 @@ Use these files to bootstrap a repository that is:
 ## How Codex should interpret the sources
 
 ### Source priority
-1. `openapi.json` is the **wire-contract source of truth** for DatsBlack request/response shapes.
+1. `datsblack_openapi.json` is the **wire-contract source of truth** for DatsBlack request/response shapes.
 2. The markdown files in this pack are the **fastest human-curated summaries**.
 3. The raw DOCX/PDF files are **reference backups**, not the first thing to parse.
 4. Public DatsSol event information is **metadata only**, not a mechanics contract.

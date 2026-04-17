@@ -1,32 +1,39 @@
-# Datsteam Competition Agent Starter (Offline Baseline)
+# Datsteam Competition Agent Starter (Contract-First Baseline)
 
-This repository provides a **production-oriented pre-release harness** for Datsteam-style HTTP/JSON competitions and keeps a strict split between:
-- generic core,
-- concrete DatsBlack exemplar,
-- DatsSol placeholders (unknown schema/mechanics remain isolated).
+This repository is a production-oriented starter kit for Datsteam-style HTTP/JSON competitions.
+It keeps a strict boundary between:
+- **generic core** (`src/datsteam_core/`),
+- **DatsBlack exemplar** (`src/games/datsblack/`),
+- **DatsSol unknowns/placeholders** (`src/games/datssol/`).
 
-## What this repo contains
+## What is already strong
 
-### 1) Generic core (`src/datsteam_core/`)
-- typed config loading (`env` + YAML)
-- auth abstraction (header token)
-- strict HTTP transport with retries/backoff and timeout/status/schema error classes
-- canonical state/action interfaces and runtime loop
-- replay writer + replay summary utility
-- fixture evaluator scaffold with validator integration
+- deterministic runtime loop with typed state/action interfaces
+- strict HTTP transport with retry/timeout/status/schema error classes
+- replay capture and replay summary utilities
+- DatsBlack typed client/models/canonicalization/validator/safe baseline
+- fixture-driven offline evaluation path
+- contract docs + machine-readable truth manifest
+- contract consistency and OpenAPI snapshot/diff tooling
 
-### 2) DatsBlack exemplar adapter (`src/games/datsblack/`)
-- raw schema models from bundled OpenAPI
-- typed API client for scan/command/map/registration/exit endpoints
-- live entrypoint: `python -m games.datsblack.live`
-- map fetch/cache helper via `mapUrl`
-- canonical conversion with richer tactical metadata for ships
-- stricter command sanitizer (dedupe, clamp, rotate checks)
-- safe deterministic baseline strategy
+## What is intentionally unknown
 
-### 3) DatsSol placeholders (`src/games/datssol/`)
-- explicit placeholders/interfaces only
-- no guessed DatsSol mechanics or schema
+DatsSol mechanics are **not** implemented because official docs may differ.
+Unknowns remain isolated in placeholders and docs:
+- endpoint and schema contract,
+- auth header and token flow,
+- timing and rate-limit behavior,
+- scoring and visibility rules.
+
+See:
+- `docs/contract/implemented_vs_unknown.md`
+- `docs/contract/open_questions.md`
+- `docs/contract/source_priority.md`
+
+## Canonical input locations
+
+- `docs/input/` — canonical text-first context and active contract snapshots
+- `Docs/Input/` — legacy binary archive (`.pdf/.docx`) only
 
 ## Quick start
 
@@ -40,9 +47,16 @@ make typecheck
 make test
 ```
 
+## Contract tooling
+
+```bash
+python -m scripts.check_contract_consistency
+python -m scripts.openapi_diff --base docs/input/datsblack_openapi.json --candidate docs/input/datsblack_openapi.json
+```
+
 ## Run paths
 
-### Offline fixture path (multi-tick)
+### Offline fixture path
 ```bash
 make run-fixture
 python -m scripts.run_runtime_fixture_loop
@@ -68,16 +82,19 @@ python -m games.datsblack.live --register --mode royal --map-cache
 python -m games.datsblack.live --register --mode deathmatch --ticks 5 --exit-battle
 ```
 
-Config source:
-- default: environment variables
-- optional: `--config config.sample.yaml`
+## Safe next step after DatsSol docs drop
 
-## Design constraints enforced in code
-- no external LLM calls in the runtime path
-- deterministic baseline and validator before submit
-- no unvalidated JSON emitted
-- raw models separated from canonical state
-- fixture-first local validation and replay analysis
+Follow `docs/operations/datsol_release_hour_runbook.md`:
+1. import official DatsSol contract into `docs/input/`,
+2. update truth table (`.md` + `.yaml`),
+3. add typed `games/datssol` models/client from official schema,
+4. add fixtures + defensive tests,
+5. run smoke checks before first live submit.
 
-## Important caveat
-This repository does **not** claim DatsSol mechanics are known. DatsBlack remains a concrete exemplar only; DatsSol implementation must wait for official docs.
+## Hard runtime constraints
+
+- no external LLM calls in the live action path by default,
+- deterministic fallback always available,
+- never send unvalidated JSON,
+- raw payload models separated from canonical internal state,
+- DatsBlack is exemplar only, not DatsSol truth.

@@ -1,0 +1,54 @@
+as_of: 2026-04-17
+policy:
+  note: "DatsBlack is exemplar-only; DatsSol mechanics remain unknown until official release."
+source_priority:
+  - type: official_contract
+    path: docs/input/datsblack_openapi.json
+    scope: datsblack
+  - type: curated_markdown
+    path: docs/input/
+    scope: datsblack + datssol metadata + transfer priors
+  - type: binary_archive
+    path: Docs/Input/
+    scope: backup references only
+known:
+  datssol:
+    loop_style:
+      value: "HTTP/JSON server-authoritative loop"
+      confidence: high
+      basis: docs/input/datssol_event_snapshot_2026-04-16.md
+    schema:
+      value: unknown
+      confidence: high
+      basis: docs/input/datssol_event_snapshot_2026-04-16.md
+  datsblack:
+    auth_header:
+      value: X-API-Key
+      confidence: high
+      basis: docs/input/datsblack_openapi.json
+    endpoints:
+      value:
+        - /api/map
+        - /api/scan
+        - /api/longScan
+        - /api/shipCommand
+        - /api/deathMatch/registration
+        - /api/deathMatch/exitBattle
+        - /api/royalBattle/registration
+      confidence: high
+      basis: docs/input/datsblack_openapi.json
+    state_fields:
+      value: ["myShips", "enemyShips", "zone", "tick"]
+      confidence: high
+      basis: docs/input/datsblack_openapi.json
+    action_fields:
+      value: ["ships[].id", "ships[].changeSpeed", "ships[].rotate", "ships[].cannonShoot"]
+      confidence: high
+      basis: docs/input/datsblack_openapi.json
+unknown:
+  - datssol_endpoint_set
+  - datssol_auth_contract
+  - datssol_timing_budget
+  - datssol_scoring_and_tie_break
+  - datssol_visibility_model
+  - live_server_rate_limits

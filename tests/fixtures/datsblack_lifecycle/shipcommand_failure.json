@@ -1,0 +1,5 @@
+{
+  "tick": 43,
+  "success": false,
+  "errors": [{"message": "invalid ship id"}]
+}
