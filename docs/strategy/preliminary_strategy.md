@@ -13,13 +13,21 @@ Use a conservative deterministic baseline that prioritizes:
 - Bias toward movement only when zone pressure increases.
 - Always emit syntactically valid `ships` command bundle.
 
+## Offline algorithm scaffolding now available
+- safe greedy scorer,
+- weighted feature scorer,
+- beam-lite chooser,
+- rollout/search placeholder,
+- deterministic fallback.
+
+These are intentionally game-agnostic stubs for policy A/B comparison before DatsSol contract release.
+
 ## Why this baseline
 - Minimizes invalid action risk.
 - Aligns with research memo: safe code-first baseline before search complexity.
 - Produces consistent traces for evaluation and regression testing.
 
 ## Immediate next refinements
-- zone-aware pathing heuristics,
-- friend/foe collision-risk map,
-- opportunistic low-risk shooting policy,
-- offline A/B tests via fixture runner.
+- wire DatsBlack legal action generation into generic candidate generator abstraction,
+- add scenario buckets for “missed tactical opportunity” once a trusted domain evaluator exists,
+- add per-policy holdout manifests for stability checks.

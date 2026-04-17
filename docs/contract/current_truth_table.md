@@ -11,6 +11,8 @@ Machine-readable mirror: `docs/contract/current_truth_table.yaml`.
 | DatsBlack state shape | `myShips`, `enemyShips`, `zone`, `tick` | High | `docs/input/datsblack_openapi.json` |
 | DatsBlack action shape | per-ship command bundle (`changeSpeed`, `rotate`, `cannonShoot`) | High | OpenAPI + mechanics brief |
 | DatsBlack operational harness | live CLI with env/YAML config, dry-run, scan-only, replay, map cache | High | implementation in repo |
+| Replay contract in repo | canonical `replay.v2` envelope with request/response/canonical state/action shortlist/scores/fallback/validation/budget | High | implementation in repo |
+| Offline policy lab in repo | scenario manifests, multi-policy replay runner, comparison metrics, hard-case mining | High | implementation in repo |
 | Transport hardening | retries/backoff for safe calls + timeout/status/schema error classes | High | implementation in repo |
 | DatsBlack timing prior | ticked loop (~3 sec), command resolve per tick | Medium | mechanics brief |
 | DatsBlack battle-royale prior | shrinking safe zone | Medium | mechanics brief |

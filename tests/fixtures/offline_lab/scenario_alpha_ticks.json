@@ -1,0 +1,20 @@
+[
+  {
+    "tick": 1,
+    "me": [{"id": "s1", "x": 1, "y": 1}],
+    "enemies": [{"id": "e1", "x": 3, "y": 3}],
+    "metadata": {"source": "fixture-alpha"}
+  },
+  {
+    "tick": 2,
+    "me": [{"id": "s1", "x": 2, "y": 1}],
+    "enemies": [{"id": "e1", "x": 3, "y": 2}],
+    "metadata": {"source": "fixture-alpha"}
+  },
+  {
+    "tick": 3,
+    "me": [{"id": "s1", "x": 3, "y": 1}],
+    "enemies": [],
+    "metadata": {"source": "fixture-alpha"}
+  }
+]

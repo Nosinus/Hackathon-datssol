@@ -14,6 +14,7 @@
 3. Sandbox vs production environment split.
 4. Constant drift risk between practice and finals.
 5. Map retrieval format (if any map endpoint/file is provided).
+6. Any server-provided replay that can be aligned with local `replay.v2` records.
 
 ## P2 (policy/compliance)
 1. External model usage policy in live rounds.
@@ -25,3 +26,4 @@
 - Implement concrete `games/datssol` models/client/adapter from official docs only.
 - Add official-schema fixtures + validator tests before first live submit.
 - Keep DatsBlack exemplar for regression comparison, not as DatsSol truth.
+- Add DatsSol-specific adapters for candidate generation/evaluation while preserving generic offline-lab interfaces.

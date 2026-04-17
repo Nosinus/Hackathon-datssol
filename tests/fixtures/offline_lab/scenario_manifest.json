@@ -1,0 +1,14 @@
+[
+  {
+    "scenario_id": "alpha",
+    "description": "single ship pressure test",
+    "source": "fixture",
+    "ticks_file": "scenario_alpha_ticks.json"
+  },
+  {
+    "scenario_id": "beta",
+    "description": "empty-fleet fallback test",
+    "source": "fixture",
+    "ticks_file": "scenario_beta_ticks.json"
+  }
+]

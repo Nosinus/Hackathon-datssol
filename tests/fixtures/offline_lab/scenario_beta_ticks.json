@@ -1,0 +1,14 @@
+[
+  {
+    "tick": 10,
+    "me": [],
+    "enemies": [{"id": "e1", "x": 7, "y": 5}],
+    "metadata": {"source": "fixture-beta"}
+  },
+  {
+    "tick": 11,
+    "me": [],
+    "enemies": [{"id": "e1", "x": 7, "y": 6}],
+    "metadata": {"source": "fixture-beta"}
+  }
+]

@@ -1,14 +1,14 @@
 # Backlog
 
 ## P0 (next)
-- Add long-scan decision policy (currently only hook/transport path is wired).
-- Expand strategy comparison beyond scaffold baseline clone.
-- Add richer map parsing once concrete map file format examples are collected.
+- Wire DatsBlack legality generator into generic offline-lab candidate interface.
+- Expand scenario fixture library with adversarial edge cases and parser anomaly records.
 - Add per-endpoint latency histogram export (p50/p95/p99) from live runs.
+- Add optional manifest bucketing by map/mode/observability tags.
 
 ## P1
 - Add CI step for `scripts/check_contract_consistency.py` and OpenAPI diff gating.
-- Integrate optional static map geometry helpers into baseline safety checks.
+- Integrate static map geometry helpers into offline tactical opportunity labeling.
 - Add transport circuit-breaker style guard when repeated 5xx/timeouts occur.
 - Generate/update typed models from OpenAPI snapshot script.
 
@@ -16,3 +16,4 @@
 - Implement concrete `games/datssol` adapter after official release docs.
 - Revisit auth/header abstraction once DatsSol auth contract is known.
 - Add policy/compliance guardrails based on official live-round rules.
+- Replace rollout placeholder with domain-validated bounded search once forward model exists.

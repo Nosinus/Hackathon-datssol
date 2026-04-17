@@ -20,3 +20,6 @@ Assume schema/auth/time-budget unknowns for DatsSol should remain in placeholder
 
 ## A7. Canonical source locations
 Assume `docs/input/` is canonical for text/contract snapshots while `Docs/Input/` is archival binary-only storage.
+
+## A8. Offline decision lab assumption
+Assume policy quality should be improved primarily through deterministic replay/manifests and comparable metrics before any live experimentation.
