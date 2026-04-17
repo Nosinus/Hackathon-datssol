@@ -104,6 +104,8 @@ def _to_row(path: Path, payload: dict[str, Any]) -> TickRow:
 
     flags = payload.get("validation_flags", {})
     flags = flags if isinstance(flags, dict) else {}
+    fallback_flags = payload.get("fallback_flags", {})
+    fallback_flags = fallback_flags if isinstance(fallback_flags, dict) else {}
 
     run_id = run_meta.get("run_id")
     if not isinstance(run_id, str) or not run_id:
@@ -119,6 +121,9 @@ def _to_row(path: Path, payload: dict[str, Any]) -> TickRow:
     disagreement = 0
     if bool(unknown_fields.get("policy_disagreement", False)):
         disagreement = 1
+    fallback_used = bool(payload.get("fallback_used", False))
+    if not fallback_used:
+        fallback_used = any(bool(v) for v in fallback_flags.values())
 
     return TickRow(
         run_id=run_id,
@@ -128,7 +133,7 @@ def _to_row(path: Path, payload: dict[str, Any]) -> TickRow:
         latency_ms=payload.get("latency_ms")
         if isinstance(payload.get("latency_ms"), int)
         else None,
-        fallback_used=1 if bool(payload.get("fallback_used", False)) else 0,
+        fallback_used=1 if fallback_used else 0,
         invalid_or_sanitized=1 if bool(flags.get("sanitized", False)) else 0,
         unknown_field_count=len(unknown) if isinstance(unknown, list) else 0,
         disagreement_bucket=disagreement,

@@ -6,7 +6,15 @@ from pathlib import Path
 from scripts import replay_analytics
 
 
-def _write_tick(path: Path, *, run_id: str, tick: int, margin: float | None = None) -> None:
+def _write_tick(
+    path: Path,
+    *,
+    run_id: str,
+    tick: int,
+    margin: float | None = None,
+    fallback_used: bool | None = None,
+    fallback_flags: dict[str, bool] | None = None,
+) -> None:
     payload: dict[str, object] = {
         "schema_version": "replay.v3",
         "session_id": "s1",
@@ -23,7 +31,8 @@ def _write_tick(path: Path, *, run_id: str, tick: int, margin: float | None = No
         "validator_result": {},
         "request_meta": {},
         "response_meta": {},
-        "fallback_used": tick % 2 == 0,
+        "fallback_used": tick % 2 == 0 if fallback_used is None else fallback_used,
+        "fallback_flags": fallback_flags or {},
         "candidate_scores": (
             [{"score": 1.0}, {"score": 1.0 - margin}] if margin is not None else []
         ),
@@ -69,3 +78,25 @@ def test_ingest_and_summarize_run(tmp_path: Path) -> None:
     assert summary["fallback_count"] == 1
     assert summary["unknown_field_count"] == 1
     assert summary["low_margin_count"] == 1
+
+
+def test_ingest_counts_fallback_flags_when_top_level_flag_is_false(tmp_path: Path) -> None:
+    replay_dir = tmp_path / "replay"
+    replay_dir.mkdir()
+    _write_tick(
+        replay_dir / "tick_000001_a.json",
+        run_id="run-flag-fallback",
+        tick=1,
+        fallback_used=False,
+        fallback_flags={"send_margin_safe_hold": True},
+    )
+
+    manifest_dir = tmp_path / "manifests"
+    manifest_dir.mkdir()
+    db = tmp_path / "analytics.sqlite"
+
+    replay_analytics.ingest(replay_dir, manifest_dir, db)
+    summary = replay_analytics.summarize_run(db, "run-flag-fallback")
+
+    assert summary["ticks"] == 1
+    assert summary["fallback_count"] == 1
