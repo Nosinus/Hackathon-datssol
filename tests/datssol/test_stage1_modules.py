@@ -59,3 +59,12 @@ def test_baseline_returns_semantically_useful_payload() -> None:
     action = DatsSolBaselineStrategy().choose_action(state, TickBudget(tick=4, deadline_ms=900))
     validated = DatsSolSemanticValidator().validate(action, state)
     assert validated.semantic_success
+
+
+def test_graph_summary_marks_isolated_main_as_not_connected() -> None:
+    summary = summarize_graph(
+        plantations=[(0, 0), (10, 10), (11, 10)],
+        main=(0, 0),
+        signal_range=1,
+    )
+    assert summary.is_main_connected is False

@@ -73,7 +73,11 @@ def summarize_graph(
     comps = connected_components(graph)
     main_connected = False
     if main is not None:
-        main_connected = any(main in comp and len(comp) >= 1 for comp in comps)
+        for comp in comps:
+            if main not in comp:
+                continue
+            main_connected = len(comp) == len(graph)
+            break
     return GraphSummary(
         components=comps,
         articulation_points=articulation_points(graph),
