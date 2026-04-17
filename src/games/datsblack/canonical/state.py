@@ -66,6 +66,15 @@ def to_canonical(scan: ScanResponse) -> DatsBlackCanonicalState:
         "zone": scan.scan.zone.model_dump() if scan.scan.zone else None,
         "my_ships": my_ships,
         "enemy_ships": enemy_ships,
+        "remaining_budget_ms": (
+            scan.scan.tickRemainMs
+            if scan.scan.tickRemainMs is not None
+            else (
+                scan.scan.tick_remain_ms
+                if scan.scan.tick_remain_ms is not None
+                else scan.scan.remaining_budget_ms
+            )
+        ),
     }
     return DatsBlackCanonicalState(
         state=CanonicalState(tick=scan.scan.tick, me=me, enemies=enemies, metadata=metadata)

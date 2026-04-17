@@ -57,3 +57,24 @@ def test_runtime_loop_applies_send_margin_fallback(tmp_path) -> None:
 
     loop.step()
     assert sink.last_payload == {"ships": []}
+
+
+def test_runtime_loop_applies_send_margin_fallback_with_normalized_budget_key(tmp_path) -> None:
+    state = CanonicalState(
+        tick=2,
+        me=(CanonicalEntity(id="1", x=0, y=0),),
+        enemies=(),
+        metadata={"remaining_budget_ms": 25},
+    )
+    sink = _Sink()
+    loop = RuntimeLoop(
+        state_provider=_Provider(state),
+        strategy=_Strategy(),
+        action_validator=_Validator(),
+        action_sink=sink,
+        replay_writer=ReplayWriter(tmp_path),
+        send_margin_ms=50,
+    )
+
+    loop.step()
+    assert sink.last_payload == {"ships": []}

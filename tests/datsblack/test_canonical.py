@@ -27,3 +27,13 @@ def test_to_canonical_includes_rich_ship_metadata() -> None:
     assert isinstance(first["direction_vec"], tuple)
     assert len(first["direction_vec"]) == 2
     assert "max_change_speed" in first
+
+
+def test_to_canonical_includes_remaining_budget_when_available() -> None:
+    raw = json.loads(Path("tests/fixtures/datsblack_scan_sample.json").read_text(encoding="utf-8"))
+    raw["scan"]["tickRemainMs"] = 42
+
+    scan = ScanResponse.model_validate(raw)
+    state = to_canonical(scan).state
+
+    assert state.metadata["remaining_budget_ms"] == 42
