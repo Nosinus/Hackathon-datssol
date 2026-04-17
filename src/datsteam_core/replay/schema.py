@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 import json
 from dataclasses import dataclass, field
+from datetime import UTC, datetime
 from typing import Any
 
 from datsteam_core.types.core import ActionEnvelope, CanonicalState
@@ -20,6 +21,7 @@ class ReplayTickEnvelope:
     state_hash: str
     strategy_id: str
     action_reason: str
+    written_at_utc: str
     request_payload: dict[str, Any]
     response_payload: dict[str, Any]
     canonical_state: dict[str, Any]
@@ -49,6 +51,7 @@ class ReplayTickEnvelope:
             "state_hash": self.state_hash,
             "strategy_id": self.strategy_id,
             "action_reason": self.action_reason,
+            "written_at_utc": self.written_at_utc,
             "request_payload": self.request_payload,
             "response_payload": self.response_payload,
             "canonical_state": self.canonical_state,
@@ -118,6 +121,7 @@ def from_runtime_step(
         state_hash=_state_hash(canonical_payload),
         strategy_id=strategy_id,
         action_reason=action.reason,
+        written_at_utc=datetime.now(UTC).isoformat(),
         request_payload=request_payload or {},
         response_payload=result,
         canonical_state=canonical_payload,
@@ -159,6 +163,7 @@ def upgrade_legacy_record(payload: dict[str, Any]) -> ReplayTickEnvelope:
         state_hash=_state_hash(canonical_state),
         strategy_id="legacy",
         action_reason=str(chosen_action["reason"]),
+        written_at_utc=datetime.now(UTC).isoformat(),
         request_payload={},
         response_payload=response_payload,
         canonical_state=canonical_state,

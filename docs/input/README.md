@@ -9,5 +9,5 @@ Use this directory for:
 
 ## Binary artifacts
 
-Raw binary backups (`.pdf`, `.docx`) are stored in `Docs/Input/` as an archive.
+Raw binary backups (`.pdf`, `.docx`) are stored in `docs/input/raw_binaries/` as an archive.
 That folder is not the canonical location for markdown summaries or active contract snapshots.

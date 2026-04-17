@@ -19,7 +19,7 @@ Assume final game constants can differ from test/prototype values; avoid hard-co
 Assume schema/auth/time-budget unknowns for DatsSol should remain in placeholder interfaces and open-question docs until official release.
 
 ## A7. Canonical source locations
-Assume `docs/input/` is canonical for text/contract snapshots while `Docs/Input/` is archival binary-only storage.
+Assume `docs/input/` is canonical for text/contract snapshots while `docs/input/raw_binaries/` is archival binary-only storage.
 
 ## A8. Offline decision lab assumption
 Assume policy quality should be improved primarily through deterministic replay/manifests and comparable metrics before any live experimentation.

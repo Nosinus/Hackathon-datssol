@@ -86,4 +86,4 @@ Use this only to infer **interaction style**, not final mechanics.
 
 ## Source notes
 
-- Raw source in repo: `doc.pdf`
+- Raw source in repo: `raw_binaries/doc.pdf`

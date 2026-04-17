@@ -15,6 +15,7 @@ REQUIRED_PATHS = [
     Path("docs/contract/source_priority.md"),
     Path("docs/contract/implemented_vs_unknown.md"),
     Path("docs/operations/datsol_release_hour_runbook.md"),
+    Path("docs/dev/release_hour_import.md"),
     Path("docs/input/datsblack_openapi.json"),
 ]
 
@@ -29,11 +30,15 @@ def _assert_paths_exist() -> list[str]:
 
 def _assert_docs_input_is_canonical() -> list[str]:
     errors: list[str] = []
-    docs_input = ROOT / "Docs" / "Input"
-    for path in docs_input.glob("*.md"):
-        if path.name == "README.md":
-            continue
-        errors.append(f"legacy markdown found in Docs/Input (move to docs/input): {path.name}")
+    if (ROOT / "Docs").exists():
+        errors.append("legacy Docs/ directory exists; consolidate under docs/")
+
+    raw_binaries = ROOT / "docs" / "input" / "raw_binaries"
+    for path in raw_binaries.glob("*.md"):
+        if path.name != "README.md":
+            errors.append(
+                f"legacy markdown found in docs/input/raw_binaries/ (move to docs/input): {path.name}"
+            )
     return errors
 
 

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 from dataclasses import dataclass
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -57,6 +58,7 @@ def _to_envelope(payload: dict[str, Any]) -> ReplayTickEnvelope:
             state_hash=str(payload.get("state_hash", "")),
             strategy_id=str(payload.get("strategy_id", "unknown_strategy")),
             action_reason=str(payload.get("action_reason", action.get("reason", ""))),
+            written_at_utc=str(payload.get("written_at_utc", datetime.now(UTC).isoformat())),
             request_payload=dict(payload.get("request_payload", {})),
             response_payload=dict(payload.get("response_payload", {})),
             canonical_state=canonical_state,

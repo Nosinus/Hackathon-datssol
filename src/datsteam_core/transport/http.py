@@ -83,6 +83,18 @@ class HttpTransport:
     default_send_margin_ms: int = 50
 
     last_request_meta: RequestMeta | None = None
+    _client: httpx.Client | None = None
+
+    def _ensure_client(self, timeout_seconds: float | None = None) -> httpx.Client:
+        timeout = timeout_seconds or self.timeout_seconds
+        if self._client is None or self._client.is_closed:
+            self._client = httpx.Client(base_url=self.base_url, timeout=timeout)
+        return self._client
+
+    def close(self) -> None:
+        if self._client is not None and not self._client.is_closed:
+            self._client.close()
+        self._client = None
 
     def _request(
         self,
@@ -107,10 +119,14 @@ class HttpTransport:
         for attempt in range(1, max_attempts + 1):
             start = time.perf_counter()
             try:
-                with httpx.Client(
-                    base_url=self.base_url, timeout=timeout_seconds or self.timeout_seconds
-                ) as client:
-                    response = client.request(method, path, headers=request_headers, json=body)
+                client = self._ensure_client(timeout_seconds=timeout_seconds)
+                response = client.request(
+                    method,
+                    path,
+                    headers=request_headers,
+                    json=body,
+                    timeout=timeout_seconds or self.timeout_seconds,
+                )
                 latency_ms = int((time.perf_counter() - start) * 1000)
                 self.last_request_meta = RequestMeta(
                     method=method,

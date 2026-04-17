@@ -5,7 +5,7 @@ This document defines the contract-first source-of-truth policy for this reposit
 ## Canonical input locations
 
 - **Canonical text-first input folder:** `docs/input/`
-- **Legacy binary archive folder:** `Docs/Input/` (DOCX/PDF only; not canonical for markdown summaries)
+- **Legacy binary archive folder:** `docs/input/raw_binaries/` (DOCX/PDF only; not canonical for markdown summaries)
 
 ## Priority order
 
@@ -15,7 +15,7 @@ This document defines the contract-first source-of-truth policy for this reposit
 2. **Curated markdown summaries**
    - `docs/input/*.md` summaries used for quick reasoning and onboarding.
 3. **Raw binaries / archival material**
-   - `Docs/Input/*.docx`, `Docs/Input/*.pdf` as backups when markdown is insufficient.
+   - `docs/input/raw_binaries/*.docx`, `docs/input/raw_binaries/*.pdf` as backups when markdown is insufficient.
 4. **Explicit assumptions**
    - `docs/contract/assumptions.md`, always treated as provisional.
 

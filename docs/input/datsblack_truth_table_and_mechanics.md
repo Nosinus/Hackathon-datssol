@@ -169,6 +169,6 @@ If the strategy layer becomes uncertain:
 
 ## Source notes
 
-- Mechanics doc in repo: `Геймтон DatsBlack .docx`
+- Mechanics doc in repo: `raw_binaries/Геймтон DatsBlack .docx`
 - OpenAPI in repo: `datsblack_openapi.json`
 - Official documentation landing: `https://gamethon.datsteam.dev/DatsBlack/documentation/index.html`

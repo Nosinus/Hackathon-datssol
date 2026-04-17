@@ -4,10 +4,10 @@ Goal: move from unknown DatsSol contract to a safe first live submission without
 
 ## T-0 to T+10 min — ingest official artifacts
 
-1. Save official files under `docs/input/` with explicit naming:
-   - `docs/input/datssol_openapi.json` (if OpenAPI exists)
-   - `docs/input/datssol_docs_snapshot_<YYYY-MM-DD>.md` (manual summary)
-2. Keep binaries (if any) in `Docs/Input/` and add a short note in `docs/input/README.md`.
+1. Save official files under `docs/input/datssol_imports/` with explicit naming:
+   - `docs/input/datssol_imports/openapi/<tag>_openapi.json` (if OpenAPI exists)
+   - `docs/input/datssol_imports/rules/<tag>_official_rules.md` (manual summary)
+2. Keep binaries (if any) in `docs/input/raw_binaries/` and add a short note in `docs/input/README.md`.
 3. Do **not** change `src/games/datssol/` behavior yet.
 
 ## T+10 to T+20 min — contract extraction

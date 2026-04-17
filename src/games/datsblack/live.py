@@ -27,6 +27,7 @@ class DryRunActionSink(ActionSink):
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Run DatsBlack live harness")
     parser.add_argument("--config", type=Path, default=None, help="YAML config path")
+    parser.add_argument("--env-file", type=Path, default=Path(".env"), help="Optional .env path")
     parser.add_argument("--mode", choices=["royal", "deathmatch"], default=None)
     parser.add_argument("--ticks", type=int, default=1, help="number of runtime steps")
     parser.add_argument("--dry-run", action="store_true", help="skip shipCommand submit")
@@ -39,9 +40,9 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def load_settings(config_path: Path | None) -> FullSettings:
+def load_settings(config_path: Path | None, env_file: Path | None = Path(".env")) -> FullSettings:
     if config_path is None:
-        return load_from_env()
+        return load_from_env(env_file=env_file)
     return load_from_yaml(config_path)
 
 
@@ -67,7 +68,7 @@ def build_client(settings: FullSettings) -> DatsBlackClient:
 
 def main() -> None:
     args = parse_args()
-    settings = load_settings(args.config)
+    settings = load_settings(args.config, args.env_file)
     mode = args.mode or settings.datsblack.mode
     client = build_client(settings)
 

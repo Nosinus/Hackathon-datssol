@@ -51,6 +51,12 @@ class RuntimeLoop:
             action=action,
             result=result,
             request_payload=action.payload,
+            request_meta={
+                "runtime": "loop.step",
+                "send_margin_ms": self.send_margin_ms,
+                "mode": self.replay_writer.run_metadata.get("mode"),
+                "environment": self.replay_writer.run_metadata.get("environment"),
+            },
             latency_ms=latency_ms,
             remaining_budget_ms=remaining_budget_ms,
             fallback_flags={"send_margin_safe_hold": fallback_due_to_margin},

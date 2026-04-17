@@ -5,7 +5,10 @@
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -e .[dev]
+cp .env.example .env  # optional local defaults, auto-loaded
 ```
+
+Если не хотите `.env`, можно использовать `export DATASTEAM_API_KEY=...` и другие переменные окружения.
 
 ## 2) Baseline checks
 ```bash
@@ -53,3 +56,5 @@ docker compose up --build datsteam-agent
 ```bash
 python -m scripts.prepare_datssol_import --tag 20260417T180000Z
 ```
+
+Дальше используйте `docs/dev/release_hour_import.md`.

@@ -23,9 +23,9 @@ Use these files to bootstrap a repository that is:
 8. `docs/input/questions_for_datsol_release.md` — what is still missing and must stay isolated behind interfaces.
 9. Raw source files only if needed:
    - `datsblack_openapi.json`
-   - `Геймтон DatsBlack .docx`
-   - `doc.pdf`
-   - `Исследование стратегии участия в HTTP_JSON-соревновании агентов.docx`
+   - `raw_binaries/Геймтон DatsBlack .docx`
+   - `raw_binaries/doc.pdf`
+   - `raw_binaries/Исследование стратегии участия в HTTP_JSON-соревновании агентов.docx`
 
 ## How Codex should interpret the sources
 

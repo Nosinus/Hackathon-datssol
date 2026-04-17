@@ -53,8 +53,14 @@ class ReplayWriter:
             request_payload=request_payload,
             strategy_id=strategy_id,
             validator_result=validator_result,
-            request_meta=request_meta,
-            response_meta=response_meta,
+            request_meta={
+                "strategy_reason": action.reason,
+                **(request_meta or {}),
+            },
+            response_meta={
+                "result_success": bool(result.get("success")) if "success" in result else None,
+                **(response_meta or {}),
+            },
             transport_error=transport_error,
             fallback_used=fallback_used,
             candidate_count=candidate_count,

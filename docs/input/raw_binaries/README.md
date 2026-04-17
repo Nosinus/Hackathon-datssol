@@ -1,4 +1,4 @@
-# docs/input
+# docs/input/raw_binaries
 
 Canonical **text-first** input folder for this repository.
 
@@ -9,5 +9,5 @@ Use this directory for:
 
 ## Binary artifacts
 
-Raw binary backups (`.pdf`, `.docx`) are stored in `Docs/Input/` as an archive.
-That folder is not the canonical location for markdown summaries or active contract snapshots.
+This folder is archive-only for binary backups (`.pdf`, `.docx`).
+Canonical markdown and active contract snapshots must live in `docs/input/`.

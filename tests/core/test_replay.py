@@ -28,6 +28,10 @@ def test_replay_writer_creates_file(tmp_path) -> None:
     assert payload["server_tick"] == 5
     assert payload["session_id"] == "s1"
     assert payload["strategy_id"] == "baseline"
+    assert payload["action_reason"] == "test"
+    assert payload["written_at_utc"]
+    assert payload["request_meta"]["strategy_reason"] == "test"
+    assert payload["response_meta"]["result_success"] is True
     assert payload["state_hash"]
     assert payload["run_metadata"]["run_id"] == "run-1"
 

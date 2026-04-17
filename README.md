@@ -19,11 +19,13 @@
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -e .[dev]
-cp .env.example .env
+cp .env.example .env  # optional, auto-loaded if present
 make lint
 make typecheck
 make test
 ```
+
+`.env` is optional. If present, it is loaded before `load_from_env()` defaults; existing shell exports still win.
 
 ## Deployment contour
 ```bash
@@ -70,7 +72,7 @@ CLI печатает `connect/read/total` усреднения и `recommended_s
 ```bash
 python -m scripts.prepare_datssol_import --tag 20260417T180000Z
 ```
-См. `docs/operations/datssol_import_prep.md`.
+См. `docs/dev/release_hour_import.md`.
 
 ## Важные ограничения
 - не выдумываем DatsSol endpoints/schema/scoring/mechanics,

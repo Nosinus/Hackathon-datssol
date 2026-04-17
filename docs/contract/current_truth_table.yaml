@@ -9,7 +9,7 @@ source_priority:
     path: docs/input/
     scope: datsblack + datssol metadata + transfer priors
   - type: binary_archive
-    path: Docs/Input/
+    path: docs/input/raw_binaries/
     scope: backup references only
 known:
   datssol:
