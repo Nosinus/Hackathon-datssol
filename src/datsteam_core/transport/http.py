@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import gzip
 import json
 import time
 from dataclasses import dataclass
@@ -140,9 +139,6 @@ class HttpTransport:
 
     def _parse_json_object(self, response: httpx.Response) -> dict[str, Any]:
         content = response.content
-        encoding = response.headers.get("Content-Encoding", "").lower()
-        if encoding == "gzip":
-            content = gzip.decompress(content)
 
         try:
             payload = json.loads(content)
