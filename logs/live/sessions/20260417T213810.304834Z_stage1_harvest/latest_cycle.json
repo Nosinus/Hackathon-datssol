@@ -1,7 +1,7 @@
 {
-  "timestamp": "2026-04-17T21:42:39.856049+00:00",
-  "turnNo": 279,
-  "nextTurnIn": 1.011,
+  "timestamp": "2026-04-17T21:42:48.882539+00:00",
+  "turnNo": 288,
+  "nextTurnIn": 0.973,
   "idle": false,
   "submit_attempted": true,
   "submit_skipped_reason": null,
@@ -10,16 +10,16 @@
       {
         "path": [
           [
-            77,
-            47
+            103,
+            258
           ],
           [
-            77,
-            47
+            103,
+            258
           ],
           [
-            78,
-            47
+            104,
+            258
           ]
         ]
       }
@@ -32,12 +32,12 @@
   "errors": [],
   "fallback_used": false,
   "main_position": [
-    77,
-    47
+    103,
+    258
   ],
-  "main_hp": 50,
-  "main_progress": 95,
-  "main_ttf": 1,
+  "main_hp": 40,
+  "main_progress": 40,
+  "main_ttf": 6,
   "plantation_count": 1,
   "isolated_count": 0,
   "critical_bridge_count": 0,
@@ -45,8 +45,8 @@
   "construction_progress": [
     {
       "position": [
-        76,
-        47
+        102,
+        258
       ],
       "progress": 5
     }
@@ -55,26 +55,22 @@
   "bridge_beaver_threats": [],
   "meteoForecasts": [
     {
-      "kind": "earthquake",
-      "turnsUntil": 5
-    },
-    {
       "kind": "sandstorm",
       "id": "257bd30d-efac-4d05-b9c7-68a98bddc558",
       "forming": false,
       "position": [
-        165,
-        213
+        174,
+        204
       ],
       "radius": 30,
       "nextPosition": [
-        166,
-        212
+        175,
+        203
       ]
     }
   ],
   "exit_usage": {
-    "77,47": 1
+    "103,258": 1
   },
   "decision_reason": "baseline_stage2:build_receiver",
   "candidate_count": 3,
@@ -82,16 +78,16 @@
     {
       "path": [
         [
-          77,
-          47
+          103,
+          258
         ],
         [
-          77,
-          47
+          103,
+          258
         ],
         [
-          77,
-          46
+          103,
+          257
         ]
       ],
       "base_score": 1.2,
@@ -114,16 +110,16 @@
     {
       "path": [
         [
-          77,
-          47
+          103,
+          258
         ],
         [
-          77,
-          47
+          103,
+          258
         ],
         [
-          77,
-          48
+          103,
+          259
         ]
       ],
       "base_score": 1.2,
@@ -146,16 +142,16 @@
     {
       "path": [
         [
-          77,
-          47
+          103,
+          258
         ],
         [
-          77,
-          47
+          103,
+          258
         ],
         [
-          78,
-          47
+          104,
+          258
         ]
       ],
       "base_score": 1.2,
@@ -178,6 +174,6 @@
   ],
   "choice_margin": 0.43,
   "main_under_threat": false,
-  "latency_ms": 279,
+  "latency_ms": 277,
   "duplicate_turn_seen": false
 }
