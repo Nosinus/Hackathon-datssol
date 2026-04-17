@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datsteam_core.types.core import CanonicalEntity, CanonicalState, TickBudget
+from datsteam_core.types.core import ActionEnvelope, CanonicalEntity, CanonicalState, TickBudget
 from games.datsblack.strategy.baseline import SafeBaselineStrategy
 from games.datsblack.strategy.legal import DatsBlackActionValidator
 
@@ -27,7 +27,6 @@ def test_legal_validator_filters_unknown_ids() -> None:
         metadata={},
     )
     validator = DatsBlackActionValidator()
-    from datsteam_core.types.core import ActionEnvelope
 
     out = validator.sanitize(
         action=ActionEnvelope(
@@ -36,3 +35,31 @@ def test_legal_validator_filters_unknown_ids() -> None:
         state=state,
     )
     assert out.payload == {"ships": [{"id": 1}]}
+
+
+def test_legal_validator_ignores_unparseable_commands() -> None:
+    state = CanonicalState(
+        tick=3,
+        me=(CanonicalEntity(id="1", x=0, y=0),),
+        enemies=(),
+        metadata={},
+    )
+    validator = DatsBlackActionValidator()
+
+    out = validator.sanitize(
+        action=ActionEnvelope(
+            tick=3,
+            payload={
+                "ships": [
+                    {"id": "oops"},
+                    {"id": 1, "changeSpeed": "fast"},
+                    {"id": 1, "rotate": "left"},
+                    {"id": 1, "rotate": 90},
+                ]
+            },
+            reason="x",
+        ),
+        state=state,
+    )
+
+    assert out.payload == {"ships": [{"id": 1, "rotate": 90}]}
