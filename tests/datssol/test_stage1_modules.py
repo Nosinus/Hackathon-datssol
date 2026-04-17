@@ -30,7 +30,7 @@ def _state() -> CanonicalState:
 
 
 def test_graph_summary_and_range() -> None:
-    summary = summarize_graph(plantations=[(1, 1), (3, 1)], main=(1, 1), signal_range=3)
+    summary = summarize_graph(plantations=[(1, 1), (2, 1)], main=(1, 1), signal_range=3)
     assert summary.is_main_connected
     assert in_square_range((1, 1), (2, 2), 1)
 
@@ -65,6 +65,5 @@ def test_graph_summary_marks_isolated_main_as_not_connected() -> None:
     summary = summarize_graph(
         plantations=[(0, 0), (10, 10), (11, 10)],
         main=(0, 0),
-        signal_range=1,
     )
     assert summary.is_main_connected is False

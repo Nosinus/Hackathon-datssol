@@ -1,0 +1,50 @@
+{
+  "session_dir": "logs\\live\\sessions\\20260417T213714.236715Z_smoke_research",
+  "session_name": "smoke_research",
+  "pid": 9656,
+  "started_at": "2026-04-17T21:37:14.236715+00:00",
+  "ended_at": "2026-04-17T21:37:15.991704+00:00",
+  "do_submit": false,
+  "target_ticks": 3,
+  "target_hours": 0.05,
+  "cycles_total": 3,
+  "unique_turns": 3,
+  "duplicate_turns": 0,
+  "idle_cycles": 1,
+  "fallback_count": 0,
+  "submit_attempts": 0,
+  "submit_successes": 0,
+  "submit_failures": 0,
+  "error_events": 0,
+  "rate_limit_events": 0,
+  "network_events": 0,
+  "timeout_events": 0,
+  "transport_events": 0,
+  "action_breakdown": {
+    "hold": 1,
+    "command": 2
+  },
+  "submit_skip_reasons": {
+    "idle_arena": 1,
+    "watch_mode": 2
+  },
+  "error_codes": {},
+  "avg_next_turn_in": 0.663,
+  "avg_latency_ms": 272.0,
+  "max_plantation_count": 1,
+  "max_isolated_count": 0,
+  "max_critical_bridge_count": 0,
+  "max_construction_count": 0,
+  "low_confidence_turns": 2,
+  "last_turn": 555,
+  "last_timestamp": "2026-04-17T21:37:15.988702+00:00",
+  "last_main_position": [
+    61,
+    110
+  ],
+  "last_main_hp": 50,
+  "last_main_ttf": 9,
+  "_sum_next_turn_in": 1.9889999999999999,
+  "_sum_latency_ms": 816.0,
+  "stopped_reason": "tick_limit"
+}

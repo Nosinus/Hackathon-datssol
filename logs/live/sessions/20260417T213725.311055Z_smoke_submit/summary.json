@@ -1,0 +1,48 @@
+{
+  "session_dir": "logs\\live\\sessions\\20260417T213725.311055Z_smoke_submit",
+  "session_name": "smoke_submit",
+  "pid": 18772,
+  "started_at": "2026-04-17T21:37:25.311055+00:00",
+  "ended_at": "2026-04-17T21:37:26.799580+00:00",
+  "do_submit": true,
+  "target_ticks": 2,
+  "target_hours": 0.05,
+  "cycles_total": 2,
+  "unique_turns": 2,
+  "duplicate_turns": 0,
+  "idle_cycles": 0,
+  "fallback_count": 0,
+  "submit_attempts": 2,
+  "submit_successes": 1,
+  "submit_failures": 1,
+  "error_events": 0,
+  "rate_limit_events": 0,
+  "network_events": 0,
+  "timeout_events": 0,
+  "transport_events": 0,
+  "action_breakdown": {
+    "command": 2
+  },
+  "submit_skip_reasons": {},
+  "error_codes": {
+    "0": 2
+  },
+  "avg_next_turn_in": 0.749,
+  "avg_latency_ms": 458.0,
+  "max_plantation_count": 1,
+  "max_isolated_count": 0,
+  "max_critical_bridge_count": 0,
+  "max_construction_count": 0,
+  "low_confidence_turns": 2,
+  "last_turn": 565,
+  "last_timestamp": "2026-04-17T21:37:26.660698+00:00",
+  "last_main_position": [
+    61,
+    110
+  ],
+  "last_main_hp": 40,
+  "last_main_ttf": 4,
+  "_sum_next_turn_in": 1.498,
+  "_sum_latency_ms": 916.0,
+  "stopped_reason": "tick_limit"
+}

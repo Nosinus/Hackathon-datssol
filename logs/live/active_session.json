@@ -1,0 +1,9 @@
+{
+  "session_dir": "logs\\live\\sessions\\20260417T213810.304834Z_stage1_harvest",
+  "session_name": "stage1_harvest",
+  "pid": 14376,
+  "started_at": "2026-04-17T21:38:10.304834+00:00",
+  "do_submit": true,
+  "ticks": null,
+  "hours": 8.0
+}

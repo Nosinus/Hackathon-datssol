@@ -520,6 +520,16 @@ def _find_main(plantations_by_pos: dict[Point, dict[str, object]]) -> Point | No
     for point, item in plantations_by_pos.items():
         if bool(item.get("is_main")):
             return point
+    if not plantations_by_pos:
+        return None
+    connected = [
+        point
+        for point, item in sorted(plantations_by_pos.items())
+        if not bool(item.get("is_isolated"))
+    ]
+    if connected:
+        return connected[0]
+    return sorted(plantations_by_pos)[0]
     return None
 
 

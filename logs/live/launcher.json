@@ -1,0 +1,21 @@
+﻿{
+    "pid":  14376,
+    "launchedAt":  "2026-04-17T21:38:09.4915912Z",
+    "repoRoot":  "D:\\Antigravity\\Hackathon-datssol",
+    "stdout":  "D:\\Antigravity\\Hackathon-datssol\\logs\\\\live\\autoplay_stdout.log",
+    "stderr":  "D:\\Antigravity\\Hackathon-datssol\\logs\\\\live\\autoplay_stderr.log",
+    "arguments":  [
+                      "-m",
+                      "scripts.cli",
+                      "datssol",
+                      "autoplay",
+                      "--hours",
+                      "8",
+                      "--session-name",
+                      "stage1_harvest",
+                      "--summary-every",
+                      "60",
+                      "--max-consecutive-errors",
+                      "20"
+                  ]
+}

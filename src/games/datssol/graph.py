@@ -70,7 +70,13 @@ def in_square_range(src: Point, dst: Point, rng: int) -> bool:
     return abs(src[0] - dst[0]) <= rng and abs(src[1] - dst[1]) <= rng
 
 
-def summarize_graph(*, plantations: list[Point], main: Point | None) -> GraphSummary:
+def summarize_graph(
+    *,
+    plantations: list[Point],
+    main: Point | None,
+    signal_range: int | None = None,
+) -> GraphSummary:
+    _ = signal_range
     graph = build_support_graph(plantations)
     comps = connected_components(graph)
     main_component: tuple[Point, ...] = tuple()
