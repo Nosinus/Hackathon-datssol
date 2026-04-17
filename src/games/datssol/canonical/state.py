@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from datsteam_core.types.core import CanonicalEntity, CanonicalState
+from games.datssol.graph import summarize_graph
 from games.datssol.models.raw import ArenaResponse
 
 
@@ -32,6 +33,22 @@ def to_canonical(arena: ArenaResponse) -> DatsSolCanonicalState:
             "extra": item.model_extra or {},
         }
 
+    main_position = None
+    for item in arena.plantations:
+        if item.isMain and len(item.position) == 2:
+            main_position = (item.position[0], item.position[1])
+            break
+
+    graph_summary = summarize_graph(
+        plantations=[
+            (item.position[0], item.position[1])
+            for item in arena.plantations
+            if len(item.position) == 2
+        ],
+        main=main_position,
+        signal_range=arena.signalRange or 3,
+    )
+
     metadata: dict[str, object] = {
         "game": "datssol",
         "turn": arena.turnNo,
@@ -51,6 +68,12 @@ def to_canonical(arena: ArenaResponse) -> DatsSolCanonicalState:
         if arena.plantationUpgrades
         else None,
         "meteo_forecasts": [item.model_dump(exclude_none=True) for item in arena.meteoForecasts],
+        "graph_components": [list(component) for component in graph_summary.components],
+        "articulation_points": [list(p) for p in graph_summary.articulation_points],
+        "risk_summary": {
+            "main_connected": graph_summary.is_main_connected,
+            "component_count": len(graph_summary.components),
+        },
         "unknown_fields": sorted((arena.model_extra or {}).keys()),
     }
 

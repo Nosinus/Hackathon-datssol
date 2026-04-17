@@ -31,3 +31,7 @@ This document defines the contract-first source-of-truth policy for this reposit
 - Never infer DatsSol endpoints/mechanics from DatsBlack unless explicitly confirmed by DatsSol docs.
 - DatsSol v1 contract is now imported; keep new unknowns limited to live operational behavior only.
 - Update `docs/contract/current_truth_table.md` and `docs/contract/current_truth_table.yaml` together after each contract change.
+
+## Stage-1 note
+
+DatsSol Stage-1 code now relies on imported official docs + fixtures first, and keeps uncertain live behaviors behind conservative defaults.

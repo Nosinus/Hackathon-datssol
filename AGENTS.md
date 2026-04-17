@@ -1,5 +1,7 @@
 # AGENTS.md — Datsteam competition repo bootstrap (v2)
 
+> Update (2026-04-17): DatsSol now has a concrete Stage-1 adapter in `src/games/datssol/`; keep unknown live behaviors isolated and documented.
+
 ## Start here
 
 Read these files in order before major edits:

@@ -24,3 +24,7 @@
 
 ## Non-goal (current baseline)
 - no live LLM/model dependency in move path.
+
+## Stage-1 runtime split
+
+Runtime now performs deterministic graph-aware shortlist + semantic validation; deeper refinements remain offline.

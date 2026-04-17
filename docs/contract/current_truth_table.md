@@ -21,3 +21,8 @@ Machine-readable mirror: `docs/contract/current_truth_table.yaml`.
 - DatsSol schema is now concrete in code/docs.
 - Keep generic runtime + adapter split.
 - Track only remaining real ambiguities in `open_questions.md`.
+
+## Stage-1 implementation checkpoint (2026-04-17)
+
+- `src/games/datssol/` now includes concrete legality, scheduling, scoring, and fallback modules.
+- Replay and CLI paths preserve semantic success distinction (`code==0` with empty `errors[]` required).

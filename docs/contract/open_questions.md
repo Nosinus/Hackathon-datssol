@@ -15,3 +15,8 @@ DatsSol schema is no longer unknown. Remaining questions are **operational/live*
 ## P2
 1. Final-round timing/turn duration changes after training.
 2. Any late balancing changes to upgrade caps or hazard probabilities.
+
+## Stage-1 still-open live checks
+
+- Exact duplicate-submit behavior across race conditions (same turn, delayed ACK).
+- Whether `GET /api/logs` may truncate or paginate under long rounds.

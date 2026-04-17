@@ -36,3 +36,10 @@ python -m scripts.cli datssol arena
 python -m scripts.cli datssol logs
 ```
 Avoid spamming `/api/command` before validating payloads offline.
+
+## DatsSol Stage-1 smoke
+
+```bash
+python -m games.datssol.live --dry-run-submit --once
+python -m games.datssol.live --poll-only --dry-run-submit --once
+```
