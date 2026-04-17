@@ -1,6 +1,6 @@
 {
-  "turnNo": 303,
-  "nextTurnIn": 0.977,
+  "turnNo": 308,
+  "nextTurnIn": 0.983,
   "size": [
     378,
     378
@@ -16,7 +16,7 @@
       "isMain": true,
       "isIsolated": false,
       "immunityUntilTurn": 303,
-      "hp": 50
+      "hp": 40
     }
   ],
   "enemy": [],
@@ -24,10 +24,6 @@
     [
       243,
       46
-    ],
-    [
-      245,
-      48
     ],
     [
       241,
@@ -40,8 +36,8 @@
         243,
         49
       ],
-      "terraformationProgress": 15,
-      "turnsUntilDegradation": 57
+      "terraformationProgress": 40,
+      "turnsUntilDegradation": 52
     }
   ],
   "construction": [
@@ -57,7 +53,7 @@
   "plantationUpgrades": {
     "points": 10,
     "intervalTurns": 30,
-    "turnsUntilPoints": 27,
+    "turnsUntilPoints": 22,
     "maxPoints": 15,
     "tiers": [
       {
@@ -104,21 +100,17 @@
   },
   "meteoForecasts": [
     {
-      "kind": "earthquake",
-      "turnsUntil": 1
-    },
-    {
       "kind": "sandstorm",
       "id": "257bd30d-efac-4d05-b9c7-68a98bddc558",
       "forming": false,
       "position": [
-        189,
-        189
+        194,
+        184
       ],
       "radius": 30,
       "nextPosition": [
-        190,
-        188
+        195,
+        183
       ]
     }
   ]

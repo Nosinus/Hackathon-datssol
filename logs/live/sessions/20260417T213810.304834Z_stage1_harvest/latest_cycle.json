@@ -1,10 +1,10 @@
 {
-  "timestamp": "2026-04-17T21:43:04.884000+00:00",
-  "turnNo": 303,
-  "nextTurnIn": 0.977,
+  "timestamp": "2026-04-17T21:43:08.883769+00:00",
+  "turnNo": 308,
+  "nextTurnIn": 0.983,
   "idle": false,
-  "submit_attempted": false,
-  "submit_skipped_reason": "duplicate_turn_guard",
+  "submit_attempted": true,
+  "submit_skipped_reason": null,
   "action": {
     "command": [
       {
@@ -25,16 +25,19 @@
       }
     ]
   },
-  "result": null,
+  "result": {
+    "code": 0,
+    "errors": []
+  },
   "errors": [],
   "fallback_used": false,
   "main_position": [
     243,
     49
   ],
-  "main_hp": 50,
-  "main_progress": 15,
-  "main_ttf": 9,
+  "main_hp": 40,
+  "main_progress": 40,
+  "main_ttf": 6,
   "plantation_count": 1,
   "isolated_count": 0,
   "critical_bridge_count": 0,
@@ -52,21 +55,17 @@
   "bridge_beaver_threats": [],
   "meteoForecasts": [
     {
-      "kind": "earthquake",
-      "turnsUntil": 1
-    },
-    {
       "kind": "sandstorm",
       "id": "257bd30d-efac-4d05-b9c7-68a98bddc558",
       "forming": false,
       "position": [
-        189,
-        189
+        194,
+        184
       ],
       "radius": 30,
       "nextPosition": [
-        190,
-        188
+        195,
+        183
       ]
     }
   ],
@@ -94,7 +93,7 @@
       "base_score": 1.2,
       "adjusted_score": 1.2,
       "exit_use_index": 0,
-      "total": 0.1,
+      "total": 1.3,
       "components": {
         "base": 1.2,
         "main_safety": 0.5,
@@ -105,7 +104,7 @@
         "exit_congestion": -0.0,
         "limit_penalty": 0.0,
         "settlement_margin_bonus": 0.0,
-        "earthquake_penalty": -1.2
+        "earthquake_penalty": 0.0
       }
     },
     {
@@ -126,7 +125,7 @@
       "base_score": 1.2,
       "adjusted_score": 1.02,
       "exit_use_index": 1,
-      "total": -0.33,
+      "total": 0.87,
       "components": {
         "base": 1.02,
         "main_safety": 0.5,
@@ -137,7 +136,7 @@
         "exit_congestion": -0.25,
         "limit_penalty": 0.0,
         "settlement_margin_bonus": 0.0,
-        "earthquake_penalty": -1.2
+        "earthquake_penalty": 0.0
       }
     },
     {
@@ -158,7 +157,7 @@
       "base_score": 1.2,
       "adjusted_score": 0.867,
       "exit_use_index": 2,
-      "total": -0.733,
+      "total": 0.467,
       "components": {
         "base": 0.867,
         "main_safety": 0.5,
@@ -169,12 +168,12 @@
         "exit_congestion": -0.5,
         "limit_penalty": 0.0,
         "settlement_margin_bonus": 0.0,
-        "earthquake_penalty": -1.2
+        "earthquake_penalty": 0.0
       }
     }
   ],
   "choice_margin": 0.43,
-  "main_under_threat": true,
-  "latency_ms": 142,
-  "duplicate_turn_seen": true
+  "main_under_threat": false,
+  "latency_ms": 277,
+  "duplicate_turn_seen": false
 }
