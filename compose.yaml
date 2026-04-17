@@ -1,0 +1,9 @@
+services:
+  datsteam-agent:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: ["fixture-run", "--fixture", "tests/fixtures/datsblack_scan_multi_tick.json"]
+    volumes:
+      - ./logs:/app/logs
+      - ./ops:/app/ops

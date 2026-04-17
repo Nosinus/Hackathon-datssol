@@ -1,6 +1,6 @@
 PYTHON ?= python3
 
-.PHONY: setup format lint typecheck test run-fixture run-live-datsblack summarize-replay compare-strategies contract-check offline-lab
+.PHONY: setup format lint typecheck test run-fixture run-live-datsblack summarize-replay compare-strategies contract-check offline-lab replay-ingest container-smoke
 
 setup:
 	$(PYTHON) -m pip install -e .[dev]
@@ -35,3 +35,10 @@ compare-strategies:
 
 offline-lab:
 	$(PYTHON) -m scripts.offline_decision_lab run-manifest tests/fixtures/offline_lab/scenario_manifest.json
+
+replay-ingest:
+	$(PYTHON) -m scripts.replay_analytics ingest --replay-dir logs/replay --manifest-dir ops/manifests
+
+container-smoke:
+	docker build -t datsteam-agent:predoc .
+	docker run --rm -v "$$(pwd)/logs:/app/logs" datsteam-agent:predoc fixture-run

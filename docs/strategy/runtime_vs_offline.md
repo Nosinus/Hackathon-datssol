@@ -6,7 +6,7 @@
 - choose baseline action,
 - sanitize/validate action,
 - submit action,
-- write replay telemetry (`replay.v2` envelope).
+- write replay telemetry (`replay.v3` envelope + run manifest metadata lineage).
 
 ## Offline decision lab (iteration loop)
 - load scenario manifests and canonical tick fixtures,

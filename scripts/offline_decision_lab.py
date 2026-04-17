@@ -39,8 +39,8 @@ def _default_policies() -> list[CompositeOfflinePolicy]:
             evaluator=WeightedFeatureEvaluator(
                 weights={
                     "bias": 0.0,
-                    "has_ships_field": 1.0,
-                    "ship_count": 0.5,
+                    "has_command_list": 1.0,
+                    "command_count": 0.5,
                     "enemy_count": -0.1,
                 }
             ),
@@ -52,7 +52,7 @@ def _default_policies() -> list[CompositeOfflinePolicy]:
 
 def cmd_inspect_replay(path: Path) -> None:
     payload = json.loads(path.read_text(encoding="utf-8"))
-    if payload.get("schema_version") != "replay.v2":
+    if payload.get("schema_version") not in {"replay.v2", "replay.v3"}:
         envelope = upgrade_legacy_record(payload).to_dict()
     else:
         envelope = payload

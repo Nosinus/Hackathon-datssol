@@ -7,3 +7,6 @@ __pycache__/
 # Keep raw binaries only in original source drop folder
 /docs/input/*.pdf
 /docs/input/*.docx
+logs/analytics/
+ops/manifests/*.json
+src/datsteam_agent_starter.egg-info/

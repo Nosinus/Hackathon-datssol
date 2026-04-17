@@ -15,6 +15,7 @@ class ReplayWriter:
     base_dir: Path
     session_id: str = field(default_factory=lambda: uuid4().hex)
     round_id: str = "default-round"
+    run_metadata: dict[str, object] = field(default_factory=dict)
 
     def write_step(
         self,
@@ -39,11 +40,12 @@ class ReplayWriter:
         parser_extras: dict[str, object] | None = None,
     ) -> Path:
         self.base_dir.mkdir(parents=True, exist_ok=True)
+        session_id = str(self.run_metadata.get("session_id", self.session_id))
         ts = datetime.now(UTC).strftime("%Y%m%dT%H%M%S.%fZ")
         nonce = uuid4().hex[:8]
         path = self.base_dir / f"tick_{state.tick:06d}_{ts}_{nonce}.json"
         envelope = from_runtime_step(
-            session_id=self.session_id,
+            session_id=session_id,
             round_id=self.round_id,
             state=state,
             action=action,
@@ -63,6 +65,7 @@ class ReplayWriter:
             fallback_flags=fallback_flags,
             validation_flags=validation_flags,
             parser_extras=parser_extras,
+            run_metadata=self.run_metadata,
         )
         path.write_text(
             json.dumps(envelope.to_dict(), ensure_ascii=False, indent=2), encoding="utf-8"

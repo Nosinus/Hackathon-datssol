@@ -3,6 +3,10 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Protocol
 
+from datsteam_core.decision.action_shape import (
+    build_neutral_action_payload,
+    is_minimally_valid_action_payload,
+)
 from datsteam_core.types.core import ActionEnvelope, CanonicalState, TickBudget
 
 
@@ -45,7 +49,9 @@ def choose_best_candidate(
     _ = budget
     candidates = generator.generate(state)
     if not candidates:
-        action = ActionEnvelope(tick=state.tick, payload={"ships": []}, reason="no-candidates")
+        action = ActionEnvelope(
+            tick=state.tick, payload=build_neutral_action_payload(), reason="no-candidates"
+        )
         return DecisionRecord(
             strategy_id=strategy_id,
             tick=state.tick,
@@ -65,5 +71,5 @@ def choose_best_candidate(
         action_reason=action.reason,
         candidate_count=len(candidates),
         fallback_used=False,
-        validator_result={"valid": isinstance(best.get("ships"), list)},
+        validator_result={"valid": is_minimally_valid_action_payload(best)},
     )
