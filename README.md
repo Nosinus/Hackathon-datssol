@@ -16,6 +16,17 @@ It keeps a strict boundary between:
 - contract docs + machine-readable truth manifest
 - contract consistency and OpenAPI snapshot/diff tooling
 
+## New: offline decision-evaluation lab
+
+The repo now includes a generic offline decision lab for replay-driven strategy iteration:
+
+- canonical per-tick replay envelope (`replay.v2`) with action shortlist, candidate scores, fallback/validation flags, latency/budget, and parser extras
+- scenario manifest runner that replays the same fixture stream against multiple policy implementations
+- game-agnostic plugin interfaces for candidate generation, state evaluation, bounded search, and deterministic fallback
+- offline metrics and error taxonomy buckets (invalid/fallback/timeout/disagreement/margin/unknown-field counts)
+- hard-case mining utilities for catastrophic, low-margin, repeated fallback, parser anomalies, and policy disagreement scenarios
+- analysis CLI for inspect/summarize/compare/worst-case export workflows
+
 ## What is intentionally unknown
 
 DatsSol mechanics are **not** implemented because official docs may differ.
@@ -62,9 +73,12 @@ make run-fixture
 python -m scripts.run_runtime_fixture_loop
 ```
 
-### Strategy comparison scaffold
+### Offline decision lab
 ```bash
-make compare-strategies
+python -m scripts.offline_decision_lab run-manifest tests/fixtures/offline_lab/scenario_manifest.json
+python -m scripts.offline_decision_lab compare tests/fixtures/offline_lab/scenario_manifest.json safe_greedy weighted_feature
+python -m scripts.offline_decision_lab worst-cases tests/fixtures/offline_lab/scenario_manifest.json --top-k 5
+python -m scripts.offline_decision_lab export-hard-scenarios tests/fixtures/offline_lab/scenario_manifest.json logs/offline/hard_cases.json
 ```
 
 ### Replay summary

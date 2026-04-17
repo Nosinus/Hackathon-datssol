@@ -27,13 +27,22 @@ make run-fixture
 python -m scripts.compare_datsblack_strategies
 ```
 
-## 5. Run fixture runtime loop + replay output
+## 5. Offline decision lab workflows
+```bash
+python -m scripts.offline_decision_lab run-manifest tests/fixtures/offline_lab/scenario_manifest.json
+python -m scripts.offline_decision_lab compare tests/fixtures/offline_lab/scenario_manifest.json safe_greedy weighted_feature
+python -m scripts.offline_decision_lab worst-cases tests/fixtures/offline_lab/scenario_manifest.json --top-k 5
+python -m scripts.offline_decision_lab export-hard-scenarios tests/fixtures/offline_lab/scenario_manifest.json logs/offline/hard_cases.json
+```
+
+## 6. Run fixture runtime loop + replay output
 ```bash
 python -m scripts.run_runtime_fixture_loop
 python -m scripts.summarize_replay logs/replay
+python -m scripts.offline_decision_lab summarize-replay logs/replay
 ```
 
-## 6. Run live DatsBlack harness
+## 7. Run live DatsBlack harness
 Dry-run (no submit):
 ```bash
 python -m games.datsblack.live --dry-run --ticks 3
@@ -54,7 +63,7 @@ Deathmatch lifecycle:
 python -m games.datsblack.live --register --mode deathmatch --ticks 3 --exit-battle
 ```
 
-## 7. Replay and map directories
+## 8. Replay and map directories
 - replay default: `logs/replay/`
 - map cache default: `logs/maps/`
 - replay summary is machine-readable JSON via `scripts/summarize_replay.py`

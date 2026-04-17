@@ -1,6 +1,6 @@
 PYTHON ?= python3
 
-.PHONY: setup format lint typecheck test run-fixture run-live-datsblack summarize-replay compare-strategies contract-check
+.PHONY: setup format lint typecheck test run-fixture run-live-datsblack summarize-replay compare-strategies contract-check offline-lab
 
 setup:
 	$(PYTHON) -m pip install -e .[dev]
@@ -31,3 +31,7 @@ summarize-replay:
 
 compare-strategies:
 	$(PYTHON) -m scripts.compare_datsblack_strategies
+
+
+offline-lab:
+	$(PYTHON) -m scripts.offline_decision_lab run-manifest tests/fixtures/offline_lab/scenario_manifest.json
