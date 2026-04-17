@@ -1,7 +1,6 @@
-"""DatsSol adapter placeholder.
+"""Deprecated placeholder module kept for backward compatibility.
 
-Unknowns intentionally isolated until official rules are released.
-See docs/contract/open_questions.md and docs/contract/assumptions.md.
+DatsSol now has a concrete v1 adapter under `games.datssol`.
 """
 
 from __future__ import annotations
@@ -11,5 +10,5 @@ from dataclasses import dataclass
 
 @dataclass(frozen=True)
 class DatsSolContractPlaceholder:
-    schema_status: str = "unknown"
-    notes: str = "Await official release; keep generic core and adapters decoupled."
+    schema_status: str = "released_v1"
+    notes: str = "Use games.datssol.models/raw+adapter+strategy instead of placeholder assumptions."

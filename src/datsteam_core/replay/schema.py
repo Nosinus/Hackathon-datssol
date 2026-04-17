@@ -142,7 +142,7 @@ def from_runtime_step(
         parser_extras=parser_extras or {},
         run_metadata=run_metadata or {},
         written_at_utc=written_at_utc,
-        result_success=result.get("success") if isinstance(result.get("success"), bool) else None,
+        result_success=_infer_result_success(result),
     )
 
 
@@ -172,7 +172,18 @@ def upgrade_legacy_record(payload: dict[str, Any]) -> ReplayTickEnvelope:
         chosen_action=chosen_action,
         validation_flags={"upgraded_from_legacy": True},
         run_metadata={},
-        result_success=response_payload.get("success")
-        if isinstance(response_payload.get("success"), bool)
-        else None,
+        result_success=_infer_result_success(response_payload),
     )
+
+
+def _infer_result_success(payload: dict[str, Any]) -> bool | None:
+    success = payload.get("success")
+    if isinstance(success, bool):
+        return success
+    code = payload.get("code")
+    errors = payload.get("errors")
+    if isinstance(code, int):
+        if isinstance(errors, list):
+            return code == 0 and len(errors) == 0
+        return code == 0
+    return None

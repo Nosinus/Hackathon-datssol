@@ -1,0 +1,6 @@
+{
+  "code": 0,
+  "errors": [
+    "empty command: no plantation actions, no relocateMain, and no plantationUpgrade provided"
+  ]
+}

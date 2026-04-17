@@ -29,5 +29,5 @@ This document defines the contract-first source-of-truth policy for this reposit
 ## Guardrails
 
 - Never infer DatsSol endpoints/mechanics from DatsBlack unless explicitly confirmed by DatsSol docs.
-- Keep DatsSol unknowns in placeholders and open questions until official release artifacts are imported.
+- DatsSol v1 contract is now imported; keep new unknowns limited to live operational behavior only.
 - Update `docs/contract/current_truth_table.md` and `docs/contract/current_truth_table.yaml` together after each contract change.

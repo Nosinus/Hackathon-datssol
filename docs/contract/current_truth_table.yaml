@@ -1,54 +1,50 @@
 as_of: 2026-04-17
 policy:
-  note: "DatsBlack is exemplar-only; DatsSol mechanics remain unknown until official release."
+  note: "DatsSol v1 imported from official release docs; keep adapter boundaries explicit."
 source_priority:
+  - type: official_release_doc
+    path: docs/input/Документация ИГРЫ.docx
+    scope: datssol
   - type: official_contract
     path: docs/input/datsblack_openapi.json
     scope: datsblack
   - type: curated_markdown
     path: docs/input/
-    scope: datsblack + datssol metadata + transfer priors
-  - type: binary_archive
-    path: docs/input/archive/binaries/
-    scope: backup references only
+    scope: implementation notes
 known:
   datssol:
-    loop_style:
-      value: "HTTP/JSON server-authoritative loop"
+    auth_header:
+      value: X-Auth-Token
       confidence: high
-      basis: docs/input/datssol_event_snapshot_2026-04-16.md
-    schema:
-      value: unknown
+      basis: docs/input/Документация ИГРЫ.docx
+    endpoints:
+      value:
+        - GET /api/arena
+        - POST /api/command
+        - GET /api/logs
       confidence: high
-      basis: docs/input/datssol_event_snapshot_2026-04-16.md
+      basis: docs/input/Документация ИГРЫ.docx
+    budget_field:
+      value: nextTurnIn
+      confidence: high
+      basis: docs/input/Документация ИГРЫ.docx
+    command_response:
+      value: code + errors
+      confidence: high
+      basis: docs/input/Документация ИГРЫ.docx
+    action_shape:
+      value:
+        - command[].path=[[authorX,authorY],[outputX,outputY],[targetX,targetY]]
+        - plantationUpgrade
+        - relocateMain=[[fromX,fromY],[toX,toY]]
+      confidence: high
+      basis: docs/input/Документация ИГРЫ.docx
   datsblack:
     auth_header:
       value: X-API-Key
       confidence: high
       basis: docs/input/datsblack_openapi.json
-    endpoints:
-      value:
-        - /api/map
-        - /api/scan
-        - /api/longScan
-        - /api/shipCommand
-        - /api/deathMatch/registration
-        - /api/deathMatch/exitBattle
-        - /api/royalBattle/registration
-      confidence: high
-      basis: docs/input/datsblack_openapi.json
-    state_fields:
-      value: ["myShips", "enemyShips", "zone", "tick"]
-      confidence: high
-      basis: docs/input/datsblack_openapi.json
-    action_fields:
-      value: ["ships[].id", "ships[].changeSpeed", "ships[].rotate", "ships[].cannonShoot"]
-      confidence: high
-      basis: docs/input/datsblack_openapi.json
 unknown:
-  - datssol_endpoint_set
-  - datssol_auth_contract
-  - datssol_timing_budget
-  - datssol_scoring_and_tie_break
-  - datssol_visibility_model
-  - live_server_rate_limits
+  - live_rate_limits_and_throttling
+  - exact_logs_payload_shape_when_non_registered_in_all_envs
+  - command_retry_idempotency_rules

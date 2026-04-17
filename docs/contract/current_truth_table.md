@@ -1,27 +1,23 @@
-# Current Truth Table (as of April 17, 2026, offline pack)
+# Current Truth Table (as of April 17, 2026, DatsSol v1 import)
 
 Machine-readable mirror: `docs/contract/current_truth_table.yaml`.
 
 | Topic | Known now | Confidence | Source basis |
 |---|---|---|---|
-| DatsSol loop style | HTTP/JSON server-authoritative loop | High | Event snapshot |
-| DatsSol schema | Unknown (not released in this repo) | High | Event snapshot |
-| DatsBlack auth | `X-API-Key` header | High | `docs/input/datsblack_openapi.json` |
-| DatsBlack key endpoints | `/api/map`, `/api/scan`, `/api/longScan`, `/api/shipCommand`, registration/exit endpoints | High | `docs/input/datsblack_openapi.json` |
-| DatsBlack state shape | `myShips`, `enemyShips`, `zone`, `tick` | High | `docs/input/datsblack_openapi.json` |
-| DatsBlack action shape | per-ship command bundle (`changeSpeed`, `rotate`, `cannonShoot`) | High | OpenAPI + mechanics brief |
-| DatsBlack operational harness | live CLI with env/YAML config, dry-run, scan-only, replay, map cache | High | implementation in repo |
-| Replay contract in repo | canonical `replay.v3` envelope with request/response/canonical state/action shortlist/scores/fallback/validation/budget + run metadata lineage | High | implementation in repo |
-| Offline policy lab in repo | scenario manifests, multi-policy replay runner, comparison metrics, hard-case mining | High | implementation in repo |
-| Post-run data contour | SQLite replay ingest and run-level analytics (summaries, compare-runs, worst-cases, anomalies export) | High | implementation in repo |
-| Transport hardening | retries/backoff for safe calls + timeout/status/schema error classes | High | implementation in repo |
-| DatsBlack timing prior | ticked loop (~3 sec), command resolve per tick | Medium | mechanics brief |
-| DatsBlack battle-royale prior | shrinking safe zone | Medium | mechanics brief |
-| Snake3D transfer prior | timing + partial observability + command overwrite patterns may exist in ecosystem | Medium | warmup summary |
-| Live infra behavior | exact timeout/rate-limit quirks unknown offline | High uncertainty | missing live env |
+| DatsSol loop style | HTTP/JSON, server-authoritative, tick/turn based | High | `docs/input/Документация ИГРЫ.docx` |
+| DatsSol auth | `X-Auth-Token` header | High | `docs/input/Документация ИГРЫ.docx` |
+| DatsSol endpoints | `GET /api/arena`, `POST /api/command`, `GET /api/logs` | High | `docs/input/Документация ИГРЫ.docx` |
+| DatsSol budget field | `nextTurnIn` seconds until next turn | High | `docs/input/Документация ИГРЫ.docx` |
+| DatsSol command response | `code` + `errors[]` (not `success: bool`) | High | `docs/input/Документация ИГРЫ.docx` |
+| DatsSol arena entities | plantations/enemy/mountains/cells/construction/beavers/upgrades/meteo | High | `docs/input/Документация ИГРЫ.docx` |
+| DatsSol action shape | `command[].path=[author, output, target]`, optional `plantationUpgrade`, optional `relocateMain` | High | `docs/input/Документация ИГРЫ.docx` |
+| Empty command behavior | May return empty-command error if no useful action supplied | High | `docs/input/Документация ИГРЫ.docx` |
+| Turn and round timing | 1 second turn (documented), 600 turns per round | Medium | `docs/input/Документация ИГРЫ.docx` |
+| Victory tiebreakers | points, then fewer lost plantations, then more beaver lairs destroyed, then more sabotages | High | `docs/input/Документация ИГРЫ.docx` |
+| DatsBlack exemplar | Fully implemented and retained for regression/reference | High | implementation in repo |
 
 ## Purpose
 
-- Keep implementation grounded in concrete known contract details.
-- Prevent over-claims about unreleased DatsSol mechanics.
-- Separate implemented DatsBlack exemplar features from DatsSol unknowns.
+- DatsSol schema is now concrete in code/docs.
+- Keep generic runtime + adapter split.
+- Track only remaining real ambiguities in `open_questions.md`.

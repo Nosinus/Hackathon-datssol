@@ -43,14 +43,23 @@ class RuntimeLoop:
             action = self.action_validator.sanitize(margin_fallback, state)
             fallback_due_to_margin = True
 
-        start = time.perf_counter()
-        result = self.action_sink.submit(action)
-        latency_ms = int((time.perf_counter() - start) * 1000)
+        should_submit = not (
+            state.metadata.get("game") == "datssol"
+            and isinstance(action.payload, dict)
+            and not action.payload
+        )
+        if should_submit:
+            start = time.perf_counter()
+            result = self.action_sink.submit(action)
+            latency_ms = int((time.perf_counter() - start) * 1000)
+        else:
+            result = {"code": 0, "errors": ["submit skipped: empty safe-hold action"]}
+            latency_ms = 0
         request_meta = _extract_request_meta(self.action_sink)
         response_meta: dict[str, object] = {}
-        success = result.get("success")
-        if isinstance(success, bool):
-            response_meta["result_success"] = success
+        result_success = _infer_result_success(result)
+        if result_success is not None:
+            response_meta["result_success"] = result_success
 
         self.replay_writer.write_step(
             state=state,
@@ -61,7 +70,10 @@ class RuntimeLoop:
             response_meta=response_meta,
             latency_ms=latency_ms,
             remaining_budget_ms=remaining_budget_ms,
-            fallback_flags={"send_margin_safe_hold": fallback_due_to_margin},
+            fallback_flags={
+                "send_margin_safe_hold": fallback_due_to_margin,
+                "submit_skipped_empty": not should_submit,
+            },
             validation_flags={"sanitized": proposed.payload != action.payload},
         )
         return result
@@ -72,6 +84,22 @@ def _extract_remaining_budget_ms(metadata: dict[str, object]) -> int | None:
         value = metadata.get(key)
         if isinstance(value, int):
             return value
+    next_turn = metadata.get("nextTurnIn")
+    if isinstance(next_turn, int | float):
+        return int(float(next_turn) * 1000)
+    return None
+
+
+def _infer_result_success(result: dict[str, object]) -> bool | None:
+    success = result.get("success")
+    if isinstance(success, bool):
+        return success
+    code = result.get("code")
+    errors = result.get("errors")
+    if isinstance(code, int):
+        if isinstance(errors, list):
+            return code == 0 and len(errors) == 0
+        return code == 0
     return None
 
 

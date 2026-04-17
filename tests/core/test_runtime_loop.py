@@ -56,7 +56,7 @@ def test_runtime_loop_applies_send_margin_fallback(tmp_path) -> None:
     )
 
     loop.step()
-    assert sink.last_payload == {"commands": []}
+    assert sink.last_payload == {}
 
 
 def test_runtime_loop_applies_send_margin_fallback_with_normalized_budget_key(tmp_path) -> None:
@@ -77,4 +77,4 @@ def test_runtime_loop_applies_send_margin_fallback_with_normalized_budget_key(tm
     )
 
     loop.step()
-    assert sink.last_payload == {"commands": []}
+    assert sink.last_payload == {}
