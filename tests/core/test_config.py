@@ -18,12 +18,19 @@ runtime:
   timeout_seconds: 2.0
   retries: 2
   replay_dir: logs/replay
+  backoff_initial_seconds: 0.1
+  backoff_multiplier: 1.5
+  backoff_max_seconds: 2.5
+  accept_gzip: false
 datsblack:
   mode: royal
   enable_long_scan: false
+  map_cache_dir: logs/maps
 """.strip(),
         encoding="utf-8",
     )
     settings = load_from_yaml(cfg)
     assert settings.app.api_base_url == "https://example.test"
     assert settings.datsblack.enable_long_scan is False
+    assert settings.app.runtime.backoff_multiplier == 1.5
+    assert settings.app.runtime.accept_gzip is False

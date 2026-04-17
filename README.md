@@ -1,57 +1,32 @@
 # Datsteam Competition Agent Starter (Offline Baseline)
 
-This repository provides a **production-oriented baseline** for Datsteam-style server-authoritative HTTP/JSON competitions, built to be usable immediately from offline materials.
+This repository provides a **production-oriented pre-release harness** for Datsteam-style HTTP/JSON competitions and keeps a strict split between:
+- generic core,
+- concrete DatsBlack exemplar,
+- DatsSol placeholders (unknown schema/mechanics remain isolated).
 
 ## What this repo contains
 
 ### 1) Generic core (`src/datsteam_core/`)
 - typed config loading (`env` + YAML)
 - auth abstraction (header token)
-- strict HTTP transport + pydantic validation
-- canonical state/action interfaces
-- deterministic runtime loop contract
-- replay/telemetry writer (JSON per tick)
-- offline evaluator scaffold for fixture-based strategy checks
+- strict HTTP transport with retries/backoff and timeout/status/schema error classes
+- canonical state/action interfaces and runtime loop
+- replay writer + replay summary utility
+- fixture evaluator scaffold with validator integration
 
 ### 2) DatsBlack exemplar adapter (`src/games/datsblack/`)
-- raw schema models derived from bundled OpenAPI + mechanics notes
-- canonical conversion from scan payload to generic canonical state
-- typed API client for `map/scan/longScan/shipCommand`
-- legal command sanitizer
+- raw schema models from bundled OpenAPI
+- typed API client for scan/command/map/registration/exit endpoints
+- live entrypoint: `python -m games.datsblack.live`
+- map fetch/cache helper via `mapUrl`
+- canonical conversion with richer tactical metadata for ships
+- stricter command sanitizer (dedupe, clamp, rotate checks)
 - safe deterministic baseline strategy
-- offline fixture and adapter tests
 
 ### 3) DatsSol placeholders (`src/games/datssol/`)
-- explicit placeholder contract object
-- unknown rules intentionally isolated behind docs and interfaces
-
-## Repository layout
-
-```text
-src/
-  datsteam_core/
-    auth/
-    config/
-    evaluator/
-    replay/
-    runtime/
-    transport/
-    types/
-  games/
-    datsblack/
-      api/
-      canonical/
-      models/
-      strategy/
-      fixtures/
-    datssol/
-docs/
-  input/
-  contract/
-  strategy/
-  dev/
-tests/
-```
+- explicit placeholders/interfaces only
+- no guessed DatsSol mechanics or schema
 
 ## Quick start
 
@@ -59,22 +34,50 @@ tests/
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -e .[dev]
-cp .env.example .env  # edit token/base URL as needed
+cp .env.example .env
+make lint
+make typecheck
 make test
-make run-fixture
 ```
 
-See `docs/dev/quickstart.md` for full details.
+## Run paths
+
+### Offline fixture path (multi-tick)
+```bash
+make run-fixture
+python -m scripts.run_runtime_fixture_loop
+```
+
+### Strategy comparison scaffold
+```bash
+make compare-strategies
+```
+
+### Replay summary
+```bash
+make summarize-replay
+# or
+python -m scripts.summarize_replay logs/replay
+```
+
+### Live DatsBlack harness
+```bash
+python -m games.datsblack.live --dry-run --ticks 3
+python -m games.datsblack.live --scan-only
+python -m games.datsblack.live --register --mode royal --map-cache
+python -m games.datsblack.live --register --mode deathmatch --ticks 5 --exit-battle
+```
+
+Config source:
+- default: environment variables
+- optional: `--config config.sample.yaml`
 
 ## Design constraints enforced in code
-- no external LLM calls in the runtime path by default
-- deterministic fallback-friendly strategy path
-- raw payload models separated from canonical internal state
-- validated JSON in/out around transport boundary
-- fixture-first offline testability (no live server dependency)
+- no external LLM calls in the runtime path
+- deterministic baseline and validator before submit
+- no unvalidated JSON emitted
+- raw models separated from canonical state
+- fixture-first local validation and replay analysis
 
 ## Important caveat
-This repository does **not** claim DatsSol mechanics are known. DatsBlack is used only as a concrete adapter proving architecture and coding standards under a known contract.
-
-## Input source path note
-Original offline materials are kept in `Docs/Input/`; only text-first files are mirrored into `docs/input/` to keep PR diffs compatible with Codex Cloud (no binary attachments in diff).
+This repository does **not** claim DatsSol mechanics are known. DatsBlack remains a concrete exemplar only; DatsSol implementation must wait for official docs.

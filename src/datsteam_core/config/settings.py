@@ -20,6 +20,10 @@ class RuntimeSettings:
     timeout_seconds: float
     retries: int
     replay_dir: Path
+    backoff_initial_seconds: float
+    backoff_multiplier: float
+    backoff_max_seconds: float
+    accept_gzip: bool
 
 
 @dataclass(frozen=True)
@@ -34,6 +38,7 @@ class AppSettings:
 class DatsBlackSettings:
     mode: str = "royal"
     enable_long_scan: bool = True
+    map_cache_dir: Path = Path("logs/maps")
 
 
 @dataclass(frozen=True)
@@ -62,11 +67,16 @@ def load_from_env() -> FullSettings:
             timeout_seconds=float(os.getenv("DATASTEAM_TIMEOUT_SECONDS", "1.5")),
             retries=int(os.getenv("DATASTEAM_RETRIES", "1")),
             replay_dir=Path(os.getenv("DATASTEAM_REPLAY_DIR", "logs/replay")),
+            backoff_initial_seconds=float(os.getenv("DATASTEAM_BACKOFF_INITIAL_SECONDS", "0.2")),
+            backoff_multiplier=float(os.getenv("DATASTEAM_BACKOFF_MULTIPLIER", "2.0")),
+            backoff_max_seconds=float(os.getenv("DATASTEAM_BACKOFF_MAX_SECONDS", "2.0")),
+            accept_gzip=_env_bool("DATASTEAM_ACCEPT_GZIP", True),
         ),
     )
     datsblack = DatsBlackSettings(
         mode=os.getenv("DATASTEAM_DATSBLACK_MODE", "royal"),
         enable_long_scan=_env_bool("DATASTEAM_DATSBLACK_ENABLE_LONG_SCAN", True),
+        map_cache_dir=Path(os.getenv("DATASTEAM_DATSBLACK_MAP_CACHE_DIR", "logs/maps")),
     )
     return FullSettings(app=app, datsblack=datsblack)
 
@@ -89,6 +99,10 @@ def load_from_yaml(path: str | Path) -> FullSettings:
             timeout_seconds=float(runtime.get("timeout_seconds", 1.5)),
             retries=int(runtime.get("retries", 1)),
             replay_dir=Path(runtime.get("replay_dir", "logs/replay")),
+            backoff_initial_seconds=float(runtime.get("backoff_initial_seconds", 0.2)),
+            backoff_multiplier=float(runtime.get("backoff_multiplier", 2.0)),
+            backoff_max_seconds=float(runtime.get("backoff_max_seconds", 2.0)),
+            accept_gzip=bool(runtime.get("accept_gzip", True)),
         ),
     )
     dcfg: dict[str, Any] = data.get("datsblack", {})
@@ -97,5 +111,6 @@ def load_from_yaml(path: str | Path) -> FullSettings:
         datsblack=DatsBlackSettings(
             mode=str(dcfg.get("mode", "royal")),
             enable_long_scan=bool(dcfg.get("enable_long_scan", True)),
+            map_cache_dir=Path(dcfg.get("map_cache_dir", "logs/maps")),
         ),
     )
