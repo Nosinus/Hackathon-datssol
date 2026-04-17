@@ -4,6 +4,7 @@ import argparse
 import json
 import socket
 import time
+from datetime import UTC, datetime
 from pathlib import Path
 from urllib.parse import urlparse
 
@@ -18,6 +19,7 @@ from games.datssol.canonical.state import to_canonical
 from games.datssol.models.raw import ArenaResponse, CommandRequest
 from games.datssol.strategy.baseline import DatsSolBaselineStrategy
 from games.datssol.strategy.legal import DatsSolActionValidator
+from games.datssol.timeouts import DatsSolTimeoutPolicy
 
 
 def _parser() -> argparse.ArgumentParser:
@@ -63,12 +65,19 @@ def _parser() -> argparse.ArgumentParser:
     ds_sub = ds.add_subparsers(dest="command", required=True)
     ds_sub.add_parser("arena")
     ds_sub.add_parser("logs")
+    ds_sub.add_parser("doctor")
+    ds_sub.add_parser("once")
+    ds_watch = ds_sub.add_parser("watch")
+    ds_watch.add_argument("--ticks", type=int, default=10)
     ds_dry = ds_sub.add_parser("dry-run")
     ds_dry.add_argument(
         "--fixture",
         type=Path,
         default=Path("tests/fixtures/datssol/arena_sample.json"),
     )
+    ds_submit = ds_sub.add_parser("submit")
+    ds_submit.add_argument("--file", type=Path, required=True)
+    ds_submit.add_argument("--dry-run", action="store_true")
     ds_cmd = ds_sub.add_parser("command")
     ds_cmd.add_argument("--from-file", type=Path, required=True)
     ds_loop = ds_sub.add_parser("loop")
@@ -79,6 +88,7 @@ def _parser() -> argparse.ArgumentParser:
         type=Path,
         default=Path("tests/fixtures/datssol/arena_sample.json"),
     )
+    ds_loop.add_argument("--watch-only", action="store_true")
 
     ops = sub.add_parser("ops", help="Operational utilities")
     ops_sub = ops.add_subparsers(dest="command", required=True)
@@ -252,7 +262,138 @@ def _build_datssol_client(settings: FullSettings) -> DatsSolClient:
         ),
         accept_gzip=settings.app.runtime.accept_gzip,
     )
-    return DatsSolClient(transport=transport)
+    return DatsSolClient(
+        transport=transport,
+        timeout_policy=DatsSolTimeoutPolicy(
+            base_timeout_seconds=settings.app.runtime.timeout_seconds,
+            send_margin_ms=settings.app.runtime.send_margin_ms,
+            hot_timeout_seconds=settings.app.runtime.hot_timeout_seconds,
+            cold_timeout_seconds=settings.app.runtime.cold_timeout_seconds,
+            arena_timeout_seconds=settings.app.runtime.arena_timeout_seconds,
+            command_timeout_seconds=settings.app.runtime.command_timeout_seconds,
+            logs_timeout_seconds=settings.app.runtime.logs_timeout_seconds,
+        ),
+    )
+
+
+def _datssol_live_dir() -> Path:
+    return Path("logs/live")
+
+
+def _write_json(path: Path, payload: dict[str, object]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+
+
+def _append_ndjson(path: Path, payload: dict[str, object]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("a", encoding="utf-8") as handle:
+        handle.write(json.dumps(payload, ensure_ascii=False) + "\n")
+
+
+def _is_datssol_idle(arena: ArenaResponse) -> bool:
+    if arena.size == [0, 0]:
+        return True
+    if len(arena.plantations) == 0:
+        return True
+    return False
+
+
+def _doctor_payload(settings: FullSettings) -> dict[str, object]:
+    runtime = settings.app.runtime
+    token_loaded = settings.app.auth.token not in {"", "replace_me"}
+    return {
+        "game": settings.app.game,
+        "token_loaded": token_loaded,
+        "base_url": settings.app.api_base_url,
+        "auth_header": settings.app.auth.header_name,
+        "replay_dir": str(runtime.replay_dir),
+        "timeouts": {
+            "global_timeout_seconds": runtime.timeout_seconds,
+            "send_margin_ms": runtime.send_margin_ms,
+            "hot_timeout_seconds": runtime.hot_timeout_seconds,
+            "cold_timeout_seconds": runtime.cold_timeout_seconds,
+            "arena_timeout_seconds": runtime.arena_timeout_seconds,
+            "command_timeout_seconds": runtime.command_timeout_seconds,
+            "logs_timeout_seconds": runtime.logs_timeout_seconds,
+        },
+    }
+
+
+def _run_datssol_cycle(
+    *,
+    client: DatsSolClient,
+    do_submit: bool,
+    submitted_turns: set[int],
+) -> dict[str, object]:
+    started = time.perf_counter()
+    arena = client.arena()
+    arena_payload = arena.model_dump(exclude_none=True)
+    _write_json(_datssol_live_dir() / "latest_arena.json", arena_payload)
+
+    state = to_canonical(arena).state
+    summary: dict[str, object] = {
+        "timestamp": datetime.now(UTC).isoformat(),
+        "turnNo": arena.turnNo,
+        "nextTurnIn": float(arena.nextTurnIn),
+        "idle": _is_datssol_idle(arena),
+        "submit_attempted": False,
+        "submit_skipped_reason": None,
+        "action": {},
+        "result": None,
+        "errors": [],
+        "fallback_used": False,
+        "main_position": None,
+        "main_hp": None,
+        "isolated_count": 0,
+    }
+
+    plantations = state.metadata.get("plantations")
+    if isinstance(plantations, dict):
+        isolated_count = 0
+        for item in plantations.values():
+            if not isinstance(item, dict):
+                continue
+            if bool(item.get("is_isolated")):
+                isolated_count += 1
+            if bool(item.get("is_main")):
+                summary["main_position"] = item.get("position")
+                summary["main_hp"] = item.get("hp")
+        summary["isolated_count"] = isolated_count
+
+    if summary["idle"]:
+        summary["submit_skipped_reason"] = "idle_arena"
+    else:
+        strategy = DatsSolBaselineStrategy()
+        proposed = strategy.choose_action(state, budget=TickBudget(tick=state.tick))
+        cleaned = DatsSolActionValidator().sanitize(proposed, state)
+        summary["action"] = cleaned.payload
+        summary["fallback_used"] = "fallback_" in proposed.reason
+
+        request = CommandRequest.model_validate(cleaned.payload)
+        if not request.has_useful_action():
+            summary["submit_skipped_reason"] = "empty_payload_prevented"
+        elif arena.turnNo in submitted_turns:
+            summary["submit_skipped_reason"] = "duplicate_turn_guard"
+        elif do_submit:
+            summary["submit_attempted"] = True
+            outcome = client.submit_command(
+                request,
+                next_turn_in_seconds=float(arena.nextTurnIn),
+            )
+            submitted_turns.add(arena.turnNo)
+            summary["result"] = outcome.response.model_dump(exclude_none=True)
+            if isinstance(summary["result"], dict):
+                summary["errors"] = list(summary["result"].get("errors", []))
+        else:
+            summary["submit_skipped_reason"] = "watch_mode"
+
+    latency_ms = int((time.perf_counter() - started) * 1000)
+    summary["latency_ms"] = latency_ms
+    _append_ndjson(_datssol_live_dir() / "command_history.ndjson", summary)
+    if isinstance(summary["errors"], list) and summary["errors"]:
+        _append_ndjson(_datssol_live_dir() / "errors.ndjson", summary)
+    return summary
 
 
 def _run_datssol(args: argparse.Namespace, settings: FullSettings) -> int:
@@ -282,6 +423,22 @@ def _run_datssol(args: argparse.Namespace, settings: FullSettings) -> int:
         )
         return 0
 
+    if args.command == "doctor":
+        print(json.dumps(_doctor_payload(settings), ensure_ascii=False, indent=2))
+        return 0
+
+    if args.command == "submit" and args.dry_run:
+        body = json.loads(args.file.read_text(encoding="utf-8"))
+        payload = CommandRequest.model_validate(body)
+        print(
+            json.dumps(
+                {"dry_run": True, "payload": payload.model_dump(exclude_none=True)},
+                ensure_ascii=False,
+                indent=2,
+            )
+        )
+        return 0
+
     if args.command == "loop" and args.dry_run:
         client: DatsSolClient | None = None
     else:
@@ -299,7 +456,21 @@ def _run_datssol(args: argparse.Namespace, settings: FullSettings) -> int:
 
     if args.command == "logs":
         assert client is not None
-        print(json.dumps(client.logs().model_dump(exclude_none=True), ensure_ascii=False, indent=2))
+        payload = client.logs().model_dump(exclude_none=True)
+        _write_json(_datssol_live_dir() / "latest_logs.json", payload)
+        print(json.dumps(payload, ensure_ascii=False, indent=2))
+        return 0
+
+    if args.command == "submit":
+        body = json.loads(args.file.read_text(encoding="utf-8"))
+        payload = CommandRequest.model_validate(body)
+        assert client is not None
+        result = client.submit_command(
+            payload,
+            next_turn_in_seconds=client.last_next_turn_in_seconds,
+        )
+        out = result.response.model_dump(exclude_none=True)
+        print(json.dumps(out, ensure_ascii=False, indent=2))
         return 0
 
     if args.command == "command":
@@ -308,11 +479,36 @@ def _run_datssol(args: argparse.Namespace, settings: FullSettings) -> int:
         payload = CommandRequest.model_validate(body)
         print(
             json.dumps(
-                client.command(payload).model_dump(exclude_none=True),
+                client.command(
+                    payload, next_turn_in_seconds=client.last_next_turn_in_seconds
+                ).model_dump(exclude_none=True),
                 ensure_ascii=False,
                 indent=2,
             )
         )
+        return 0
+
+    if args.command == "once":
+        assert client is not None
+        summary = _run_datssol_cycle(client=client, do_submit=True, submitted_turns=set())
+        print(json.dumps(summary, ensure_ascii=False, indent=2))
+        return 0
+
+    if args.command == "watch":
+        assert client is not None
+        submitted_turns: set[int] = set()
+        outputs = []
+        for _ in range(max(args.ticks, 1)):
+            cycle = _run_datssol_cycle(
+                client=client,
+                do_submit=False,
+                submitted_turns=submitted_turns,
+            )
+            outputs.append(cycle)
+            next_turn = cycle.get("nextTurnIn")
+            if isinstance(next_turn, int | float):
+                time.sleep(max(0.05, float(next_turn)))
+        print(json.dumps({"results": outputs}, ensure_ascii=False, indent=2))
         return 0
 
     if args.command == "loop":
@@ -337,6 +533,23 @@ def _run_datssol(args: argparse.Namespace, settings: FullSettings) -> int:
             replay_writer=ReplayWriter(settings.app.runtime.replay_dir),
             send_margin_ms=settings.app.runtime.send_margin_ms,
         )
+        if args.watch_only:
+            if client is None:
+                print(
+                    json.dumps(
+                        {"error": "--watch-only requires live client (without --dry-run)"},
+                        ensure_ascii=False,
+                    )
+                )
+                return 2
+            submitted_turns = set()
+            outputs = [
+                _run_datssol_cycle(client=client, do_submit=False, submitted_turns=submitted_turns)
+                for _ in range(args.ticks)
+            ]
+            print(json.dumps({"results": outputs}, ensure_ascii=False, indent=2))
+            return 0
+
         outputs = [loop.step() for _ in range(args.ticks)]
         print(json.dumps({"results": outputs}, ensure_ascii=False, indent=2))
         return 0

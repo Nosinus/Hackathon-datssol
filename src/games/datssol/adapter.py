@@ -30,7 +30,10 @@ class DatsSolActionSink(ActionSink):
         if not request.has_useful_action():
             return {"code": 0, "errors": ["submit skipped: no useful action"]}
 
-        result = self.client.submit_command(request)
+        result = self.client.submit_command(
+            request,
+            next_turn_in_seconds=self.client.last_next_turn_in_seconds,
+        )
         out = result.response.model_dump(exclude_none=True)
         out["semantic_success"] = result.semantic_success
         return out

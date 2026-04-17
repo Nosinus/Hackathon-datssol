@@ -25,6 +25,11 @@ class RuntimeSettings:
     backoff_max_seconds: float
     accept_gzip: bool
     send_margin_ms: int
+    hot_timeout_seconds: float | None = None
+    cold_timeout_seconds: float | None = None
+    arena_timeout_seconds: float | None = None
+    command_timeout_seconds: float | None = None
+    logs_timeout_seconds: float | None = None
 
 
 @dataclass(frozen=True)
@@ -90,6 +95,11 @@ def load_from_env(*, env_file: str | Path | None = ".env") -> FullSettings:
             backoff_max_seconds=float(os.getenv("DATASTEAM_BACKOFF_MAX_SECONDS", "2.0")),
             accept_gzip=_env_bool("DATASTEAM_ACCEPT_GZIP", True),
             send_margin_ms=int(os.getenv("DATASTEAM_SEND_MARGIN_MS", "50")),
+            hot_timeout_seconds=_optional_env_float("DATASTEAM_HOT_TIMEOUT_SECONDS"),
+            cold_timeout_seconds=_optional_env_float("DATASTEAM_COLD_TIMEOUT_SECONDS"),
+            arena_timeout_seconds=_optional_env_float("DATASTEAM_ARENA_TIMEOUT_SECONDS"),
+            command_timeout_seconds=_optional_env_float("DATASTEAM_COMMAND_TIMEOUT_SECONDS"),
+            logs_timeout_seconds=_optional_env_float("DATASTEAM_LOGS_TIMEOUT_SECONDS"),
         ),
     )
     datsblack = DatsBlackSettings(
@@ -123,6 +133,11 @@ def load_from_yaml(path: str | Path) -> FullSettings:
             backoff_max_seconds=float(runtime.get("backoff_max_seconds", 2.0)),
             accept_gzip=bool(runtime.get("accept_gzip", True)),
             send_margin_ms=int(runtime.get("send_margin_ms", 50)),
+            hot_timeout_seconds=_optional_float(runtime.get("hot_timeout_seconds")),
+            cold_timeout_seconds=_optional_float(runtime.get("cold_timeout_seconds")),
+            arena_timeout_seconds=_optional_float(runtime.get("arena_timeout_seconds")),
+            command_timeout_seconds=_optional_float(runtime.get("command_timeout_seconds")),
+            logs_timeout_seconds=_optional_float(runtime.get("logs_timeout_seconds")),
         ),
     )
     dcfg: dict[str, Any] = data.get("datsblack", {})
@@ -134,3 +149,20 @@ def load_from_yaml(path: str | Path) -> FullSettings:
             map_cache_dir=Path(dcfg.get("map_cache_dir", "logs/maps")),
         ),
     )
+
+
+def _optional_env_float(name: str) -> float | None:
+    raw = os.getenv(name)
+    if raw is None or raw.strip() == "":
+        return None
+    return float(raw)
+
+
+def _optional_float(value: object) -> float | None:
+    if value is None:
+        return None
+    if isinstance(value, int | float) and not isinstance(value, bool):
+        return float(value)
+    if isinstance(value, str):
+        return float(value)
+    return None

@@ -32,8 +32,11 @@ python -m scripts.summarize_replay logs/replay
 
 ## 5) Optional live probes (token/network required)
 ```bash
+python -m scripts.cli datssol doctor
 python -m scripts.cli datssol arena
 python -m scripts.cli datssol logs
+python -m scripts.cli datssol once
+python -m scripts.cli datssol watch --ticks 10
 ```
 Avoid spamming `/api/command` before validating payloads offline.
 

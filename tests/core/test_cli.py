@@ -127,3 +127,32 @@ def test_cli_datssol_dry_run(monkeypatch, capsys) -> None:
     assert rc == 0
     assert out["dry_run"] is True
     assert isinstance(out["action"], dict)
+
+
+def test_cli_datssol_doctor(monkeypatch, capsys) -> None:
+    monkeypatch.setenv("DATASTEAM_GAME", "datssol")
+    monkeypatch.setenv("DATASTEAM_API_BASE_URL", "https://games-test.datsteam.dev")
+    monkeypatch.setenv("DATASTEAM_AUTH_HEADER", "X-Auth-Token")
+    monkeypatch.setenv("DATASTEAM_API_KEY", "token")
+    monkeypatch.setattr("sys.argv", ["cli", "datssol", "doctor"])
+    rc = cli.main()
+    out = json.loads(capsys.readouterr().out)
+    assert rc == 0
+    assert out["token_loaded"] is True
+    assert out["auth_header"] == "X-Auth-Token"
+
+
+def test_cli_datssol_submit_dry_run_without_token(monkeypatch, tmp_path: Path, capsys) -> None:
+    payload_path = tmp_path / "payload.json"
+    payload_path.write_text('{"command":[{"path":[[1,1],[1,1],[1,2]]}]}', encoding="utf-8")
+    monkeypatch.setenv("DATASTEAM_API_KEY", "replace_me")
+    monkeypatch.setattr(
+        "sys.argv",
+        ["cli", "datssol", "submit", "--file", str(payload_path), "--dry-run"],
+    )
+
+    rc = cli.main()
+    out = json.loads(capsys.readouterr().out)
+    assert rc == 0
+    assert out["dry_run"] is True
+    assert "command" in out["payload"]
