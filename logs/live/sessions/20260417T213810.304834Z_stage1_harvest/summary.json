@@ -7,13 +7,13 @@
   "do_submit": true,
   "target_ticks": null,
   "target_hours": 8.0,
-  "cycles_total": 253,
-  "unique_turns": 228,
+  "cycles_total": 260,
+  "unique_turns": 235,
   "duplicate_turns": 25,
   "idle_cycles": 5,
   "fallback_count": 0,
-  "submit_attempts": 227,
-  "submit_successes": 227,
+  "submit_attempts": 234,
+  "submit_successes": 234,
   "submit_failures": 0,
   "error_events": 0,
   "rate_limit_events": 0,
@@ -22,30 +22,30 @@
   "transport_events": 0,
   "action_breakdown": {
     "hold": 5,
-    "command": 248
+    "command": 255
   },
   "submit_skip_reasons": {
     "idle_arena": 5,
     "duplicate_turn_guard": 21
   },
   "error_codes": {
-    "0": 227
+    "0": 234
   },
-  "avg_next_turn_in": 0.9583,
-  "avg_latency_ms": 266.9,
+  "avg_next_turn_in": 0.9589,
+  "avg_latency_ms": 267.16,
   "max_plantation_count": 1,
   "max_isolated_count": 0,
   "max_critical_bridge_count": 0,
   "max_construction_count": 1,
-  "low_confidence_turns": 223,
-  "last_turn": 258,
-  "last_timestamp": "2026-04-17T21:42:18.861747+00:00",
+  "low_confidence_turns": 230,
+  "last_turn": 265,
+  "last_timestamp": "2026-04-17T21:42:25.885372+00:00",
   "last_main_position": [
-    87,
-    52
+    77,
+    47
   ],
-  "last_main_hp": 40,
-  "last_main_ttf": 1,
-  "_sum_next_turn_in": 242.44000000000014,
-  "_sum_latency_ms": 67525.0
+  "last_main_hp": 50,
+  "last_main_ttf": 8,
+  "_sum_next_turn_in": 249.31100000000018,
+  "_sum_latency_ms": 69461.0
 }

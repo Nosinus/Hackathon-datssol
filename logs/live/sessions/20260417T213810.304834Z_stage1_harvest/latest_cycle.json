@@ -1,7 +1,7 @@
 {
-  "timestamp": "2026-04-17T21:42:18.861747+00:00",
-  "turnNo": 258,
-  "nextTurnIn": 0.988,
+  "timestamp": "2026-04-17T21:42:25.885372+00:00",
+  "turnNo": 265,
+  "nextTurnIn": 0.994,
   "idle": false,
   "submit_attempted": true,
   "submit_skipped_reason": null,
@@ -10,16 +10,16 @@
       {
         "path": [
           [
-            87,
-            52
+            77,
+            47
           ],
           [
-            87,
-            52
+            77,
+            47
           ],
           [
-            86,
-            52
+            78,
+            47
           ]
         ]
       }
@@ -32,12 +32,12 @@
   "errors": [],
   "fallback_used": false,
   "main_position": [
-    87,
-    52
+    77,
+    47
   ],
-  "main_hp": 40,
-  "main_progress": 90,
-  "main_ttf": 1,
+  "main_hp": 50,
+  "main_progress": 25,
+  "main_ttf": 8,
   "plantation_count": 1,
   "isolated_count": 0,
   "critical_bridge_count": 0,
@@ -45,8 +45,8 @@
   "construction_progress": [
     {
       "position": [
-        88,
-        52
+        76,
+        47
       ],
       "progress": 5
     }
@@ -59,18 +59,18 @@
       "id": "257bd30d-efac-4d05-b9c7-68a98bddc558",
       "forming": false,
       "position": [
-        144,
-        234
+        151,
+        227
       ],
       "radius": 30,
       "nextPosition": [
-        145,
-        233
+        152,
+        226
       ]
     }
   ],
   "exit_usage": {
-    "87,52": 1
+    "77,47": 1
   },
   "decision_reason": "baseline_stage2:build_receiver",
   "candidate_count": 3,
@@ -78,16 +78,16 @@
     {
       "path": [
         [
-          87,
-          52
+          77,
+          47
         ],
         [
-          87,
-          52
+          77,
+          47
         ],
         [
-          86,
-          52
+          77,
+          46
         ]
       ],
       "base_score": 1.2,
@@ -110,16 +110,16 @@
     {
       "path": [
         [
-          87,
-          52
+          77,
+          47
         ],
         [
-          87,
-          52
+          77,
+          47
         ],
         [
-          87,
-          51
+          77,
+          48
         ]
       ],
       "base_score": 1.2,
@@ -142,16 +142,16 @@
     {
       "path": [
         [
-          87,
-          52
+          77,
+          47
         ],
         [
-          87,
-          52
+          77,
+          47
         ],
         [
-          87,
-          53
+          78,
+          47
         ]
       ],
       "base_score": 1.2,
@@ -174,6 +174,6 @@
   ],
   "choice_margin": 0.43,
   "main_under_threat": false,
-  "latency_ms": 276,
+  "latency_ms": 274,
   "duplicate_turn_seen": false
 }
