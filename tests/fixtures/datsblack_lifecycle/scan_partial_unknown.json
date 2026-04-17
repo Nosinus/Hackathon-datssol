@@ -1,0 +1,34 @@
+{
+  "scan": {
+    "myShips": [
+      {
+        "id": 7,
+        "x": 10,
+        "y": 11,
+        "size": 3,
+        "hp": 4,
+        "maxHp": 5,
+        "direction": "north",
+        "speed": 1,
+        "maxSpeed": 4,
+        "minSpeed": -1,
+        "maxChangeSpeed": 2,
+        "cannonCooldown": 3,
+        "cannonCooldownLeft": 0,
+        "cannonRadius": 20,
+        "scanRadius": 25,
+        "cannonShootSuccessCount": 0,
+        "experimentalField": "ignored"
+      }
+    ],
+    "enemyShips": [],
+    "zone": null,
+    "tick": 44,
+    "futureField": {
+      "nested": true
+    }
+  },
+  "success": true,
+  "errors": null,
+  "debug": "ignored"
+}

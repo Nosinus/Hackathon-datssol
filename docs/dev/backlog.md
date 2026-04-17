@@ -7,9 +7,9 @@
 - Add per-endpoint latency histogram export (p50/p95/p99) from live runs.
 
 ## P1
+- Add CI step for `scripts/check_contract_consistency.py` and OpenAPI diff gating.
 - Integrate optional static map geometry helpers into baseline safety checks.
 - Add transport circuit-breaker style guard when repeated 5xx/timeouts occur.
-- Add fixture packs for deathmatch-specific flows and registration lifecycle.
 - Generate/update typed models from OpenAPI snapshot script.
 
 ## P2

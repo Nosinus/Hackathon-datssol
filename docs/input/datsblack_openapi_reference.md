@@ -1,7 +1,7 @@
-# DatsBlack OpenAPI reference (condensed from `openapi.json`)
+# DatsBlack OpenAPI reference (condensed from `datsblack_openapi.json`)
 
 This file is the text-first wire-contract summary.
-When there is any conflict between this file and prose summaries, prefer the raw `openapi.json`.
+When there is any conflict between this file and prose summaries, prefer the raw `datsblack_openapi.json`.
 
 ## Server
 
@@ -149,4 +149,4 @@ All documented endpoints require header:
 
 ## Source notes
 
-- Raw source in repo: `openapi.json`
+- Raw source in repo: `datsblack_openapi.json`

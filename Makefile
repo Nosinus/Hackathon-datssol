@@ -1,21 +1,24 @@
 PYTHON ?= python3
 
-.PHONY: setup format lint typecheck test run-fixture run-live-datsblack summarize-replay compare-strategies
+.PHONY: setup format lint typecheck test run-fixture run-live-datsblack summarize-replay compare-strategies contract-check
 
 setup:
 	$(PYTHON) -m pip install -e .[dev]
 
 format:
-	$(PYTHON) -m ruff format src tests
+	$(PYTHON) -m ruff format src tests scripts
 
 lint:
-	$(PYTHON) -m ruff check src tests
+	$(PYTHON) -m ruff check src tests scripts
 
 typecheck:
 	$(PYTHON) -m mypy src
 
 test:
 	$(PYTHON) -m pytest -q
+
+contract-check:
+	$(PYTHON) -m scripts.check_contract_consistency
 
 run-fixture:
 	$(PYTHON) -m scripts.run_datsblack_fixture

@@ -12,10 +12,16 @@ Read these files in order before major edits:
 6. `docs/input/snake3d_warmup_summary.md`
 7. `docs/input/research_memo_highlights.md`
 8. `docs/input/questions_for_datsol_release.md`
-9. `docs/input/openapi.json`
+9. `docs/input/datsblack_openapi.json`
 10. raw binaries only if needed
 
 If a markdown summary exists, prefer it over parsing the DOCX/PDF first.
+
+
+## Canonical input locations
+
+- `docs/input/` is the canonical text-first folder (markdown + active OpenAPI snapshots).
+- `Docs/Input/` is a legacy binary archive folder (DOCX/PDF backups).
 
 ## Repository mission
 
@@ -31,9 +37,9 @@ The point is to wake up with a repository that is runnable, testable, and easy t
 
 ## Source priority
 
-1. `docs/input/openapi.json` for DatsBlack wire-contract truth
+1. `docs/input/datsblack_openapi.json` for DatsBlack wire-contract truth
 2. curated markdown files in `docs/input/`
-3. raw source binaries in `docs/input/`
+3. raw source binaries in `Docs/Input/`
 4. generic assumptions only after the above
 
 Treat:

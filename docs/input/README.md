@@ -1,6 +1,13 @@
 # docs/input
 
-This folder contains **text-first offline context** copied for Codex-friendly parsing.
+Canonical **text-first** input folder for this repository.
 
-Binary source backups (`.pdf`, `.docx`) are intentionally **not duplicated here** to avoid binary-file PR limitations in Codex Cloud.
-Use the original binaries from `Docs/Input/` when needed.
+Use this directory for:
+- curated markdown context files,
+- machine-readable contract snapshots (for example `datsblack_openapi.json`),
+- future DatsSol official contract files once released.
+
+## Binary artifacts
+
+Raw binary backups (`.pdf`, `.docx`) are stored in `Docs/Input/` as an archive.
+That folder is not the canonical location for markdown summaries or active contract snapshots.

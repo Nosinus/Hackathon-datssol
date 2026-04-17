@@ -17,3 +17,6 @@ Assume final game constants can differ from test/prototype values; avoid hard-co
 
 ## A6. Unknowns isolated in adapter boundary
 Assume schema/auth/time-budget unknowns for DatsSol should remain in placeholder interfaces and open-question docs until official release.
+
+## A7. Canonical source locations
+Assume `docs/input/` is canonical for text/contract snapshots while `Docs/Input/` is archival binary-only storage.
