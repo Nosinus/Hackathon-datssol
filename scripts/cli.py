@@ -427,6 +427,18 @@ def _run_datssol(args: argparse.Namespace, settings: FullSettings) -> int:
         print(json.dumps(_doctor_payload(settings), ensure_ascii=False, indent=2))
         return 0
 
+    if args.command == "submit" and args.dry_run:
+        body = json.loads(args.file.read_text(encoding="utf-8"))
+        payload = CommandRequest.model_validate(body)
+        print(
+            json.dumps(
+                {"dry_run": True, "payload": payload.model_dump(exclude_none=True)},
+                ensure_ascii=False,
+                indent=2,
+            )
+        )
+        return 0
+
     if args.command == "loop" and args.dry_run:
         client: DatsSolClient | None = None
     else:
@@ -452,15 +464,6 @@ def _run_datssol(args: argparse.Namespace, settings: FullSettings) -> int:
     if args.command == "submit":
         body = json.loads(args.file.read_text(encoding="utf-8"))
         payload = CommandRequest.model_validate(body)
-        if args.dry_run:
-            print(
-                json.dumps(
-                    {"dry_run": True, "payload": payload.model_dump(exclude_none=True)},
-                    ensure_ascii=False,
-                    indent=2,
-                )
-            )
-            return 0
         assert client is not None
         result = client.submit_command(
             payload,
