@@ -1,0 +1,116 @@
+[
+  {
+    "scan": {
+      "myShips": [
+        {
+          "id": 1,
+          "x": 10,
+          "y": 12,
+          "size": 3,
+          "hp": 3,
+          "maxHp": 3,
+          "direction": "east",
+          "speed": 0,
+          "maxSpeed": 5,
+          "minSpeed": -1,
+          "maxChangeSpeed": 2,
+          "cannonCooldown": 2,
+          "cannonCooldownLeft": 0,
+          "cannonRadius": 20,
+          "scanRadius": 25,
+          "cannonShootSuccessCount": 0
+        },
+        {
+          "id": 2,
+          "x": 16,
+          "y": 12,
+          "size": 2,
+          "hp": 2,
+          "maxHp": 2,
+          "direction": "south",
+          "speed": 1,
+          "maxSpeed": 4,
+          "minSpeed": -1,
+          "maxChangeSpeed": 1,
+          "cannonCooldown": 3,
+          "cannonCooldownLeft": 1,
+          "cannonRadius": 18,
+          "scanRadius": 20,
+          "cannonShootSuccessCount": 1
+        }
+      ],
+      "enemyShips": [
+        {
+          "x": 35,
+          "y": 36,
+          "hp": 4,
+          "maxHp": 4,
+          "size": 4,
+          "direction": "west",
+          "speed": 1
+        }
+      ],
+      "zone": {"x": 50, "y": 50, "radius": 24},
+      "tick": 101
+    },
+    "success": true,
+    "errors": null
+  },
+  {
+    "scan": {
+      "myShips": [
+        {
+          "id": 1,
+          "x": 11,
+          "y": 12,
+          "size": 3,
+          "hp": 3,
+          "maxHp": 3,
+          "direction": "east",
+          "speed": 1,
+          "maxSpeed": 5,
+          "minSpeed": -1,
+          "maxChangeSpeed": 2,
+          "cannonCooldown": 2,
+          "cannonCooldownLeft": 0,
+          "cannonRadius": 20,
+          "scanRadius": 25,
+          "cannonShootSuccessCount": 0
+        },
+        {
+          "id": 2,
+          "x": 16,
+          "y": 13,
+          "size": 2,
+          "hp": 2,
+          "maxHp": 2,
+          "direction": "south",
+          "speed": 1,
+          "maxSpeed": 4,
+          "minSpeed": -1,
+          "maxChangeSpeed": 1,
+          "cannonCooldown": 3,
+          "cannonCooldownLeft": 0,
+          "cannonRadius": 18,
+          "scanRadius": 20,
+          "cannonShootSuccessCount": 1
+        }
+      ],
+      "enemyShips": [
+        {
+          "x": 34,
+          "y": 36,
+          "hp": 4,
+          "maxHp": 4,
+          "size": 4,
+          "direction": "west",
+          "speed": 1
+        }
+      ],
+      "zone": {"x": 50, "y": 50, "radius": 20},
+      "tick": 102
+    },
+    "success": true,
+    "errors": null
+  }
+]

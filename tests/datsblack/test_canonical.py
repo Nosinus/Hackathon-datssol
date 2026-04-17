@@ -14,3 +14,16 @@ def test_to_canonical_maps_entities() -> None:
     assert state.tick == 101
     assert len(state.me) == 2
     assert state.metadata["zone"] is not None
+
+
+def test_to_canonical_includes_rich_ship_metadata() -> None:
+    raw = json.loads(Path("tests/fixtures/datsblack_scan_sample.json").read_text(encoding="utf-8"))
+    scan = ScanResponse.model_validate(raw)
+    state = to_canonical(scan).state
+
+    my_ships = state.metadata.get("my_ships")
+    assert isinstance(my_ships, dict)
+    first = next(iter(my_ships.values()))
+    assert isinstance(first["direction_vec"], tuple)
+    assert len(first["direction_vec"]) == 2
+    assert "max_change_speed" in first

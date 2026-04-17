@@ -8,6 +8,11 @@ runtime:
   timeout_seconds: 1.5
   retries: 1
   replay_dir: logs/replay
+  backoff_initial_seconds: 0.2
+  backoff_multiplier: 2.0
+  backoff_max_seconds: 2.0
+  accept_gzip: true
 datsblack:
   mode: royal
   enable_long_scan: true
+  map_cache_dir: logs/maps

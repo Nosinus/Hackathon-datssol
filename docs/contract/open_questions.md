@@ -9,10 +9,11 @@
 6. Scoring/tie-break rules and any private evaluation split?
 
 ## P1 (important for robust performance)
-1. Retry/rate-limit behavior and error codes.
+1. Retry/rate-limit behavior and explicit server error codes.
 2. Whether commands can be overwritten in same tick.
 3. Sandbox vs production environment split.
 4. Constant drift risk between practice and finals.
+5. Map retrieval format (if any map endpoint/file is provided).
 
 ## P2 (policy/compliance)
 1. External model usage policy in live rounds.
@@ -20,6 +21,7 @@
 3. Any anti-cheat/autonomy enforcement details.
 
 ## Planned response once docs drop
-- Fill a concrete `games/datssol` adapter.
-- Keep core unchanged unless new transport/auth needs appear.
-- Add schema fixtures + validator tests before first live request.
+- Keep `datsteam_core` transport/runtime generic; add only required contract deltas.
+- Implement concrete `games/datssol` models/client/adapter from official docs only.
+- Add official-schema fixtures + validator tests before first live submit.
+- Keep DatsBlack exemplar for regression comparison, not as DatsSol truth.

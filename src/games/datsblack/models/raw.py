@@ -11,6 +11,15 @@ class ErrorModel(BaseModel):
     message: str | None = None
 
 
+class CommonResponse(BaseModel):
+    success: bool
+    errors: list[ErrorModel] | None = None
+
+
+class RegistrationResponse(CommonResponse):
+    pass
+
+
 class Zone(BaseModel):
     x: int
     y: int

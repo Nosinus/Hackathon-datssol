@@ -1,18 +1,18 @@
 # Backlog
 
 ## P0 (next)
-- implement richer DatsBlack legal action checks (collision/fire safety)
-- add runtime wiring CLI for live endpoint execution
-- add robust retry/backoff and timeout error classification
-- extend fixture set to multi-tick trajectories
+- Add long-scan decision policy (currently only hook/transport path is wired).
+- Expand strategy comparison beyond scaffold baseline clone.
+- Add richer map parsing once concrete map file format examples are collected.
+- Add per-endpoint latency histogram export (p50/p95/p99) from live runs.
 
 ## P1
-- implement strategy comparison harness with score proxies
-- add map ingestion path from `/api/map` payload/mapUrl
-- add structured metrics exporter (p50/p95 latency, invalid rate)
-- generate pydantic models directly from OpenAPI snapshot script
+- Integrate optional static map geometry helpers into baseline safety checks.
+- Add transport circuit-breaker style guard when repeated 5xx/timeouts occur.
+- Add fixture packs for deathmatch-specific flows and registration lifecycle.
+- Generate/update typed models from OpenAPI snapshot script.
 
 ## P2
-- datssol concrete adapter once docs release
-- optional compression toggles + transport middleware hooks
-- lightweight CI matrix expansion and packaging polish
+- Implement concrete `games/datssol` adapter after official release docs.
+- Revisit auth/header abstraction once DatsSol auth contract is known.
+- Add policy/compliance guardrails based on official live-round rules.

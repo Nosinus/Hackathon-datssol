@@ -1,6 +1,6 @@
 PYTHON ?= python3
 
-.PHONY: setup format lint typecheck test run-fixture
+.PHONY: setup format lint typecheck test run-fixture run-live-datsblack summarize-replay compare-strategies
 
 setup:
 	$(PYTHON) -m pip install -e .[dev]
@@ -19,3 +19,12 @@ test:
 
 run-fixture:
 	$(PYTHON) -m scripts.run_datsblack_fixture
+
+run-live-datsblack:
+	$(PYTHON) -m games.datsblack.live --dry-run --ticks 1
+
+summarize-replay:
+	$(PYTHON) -m scripts.summarize_replay
+
+compare-strategies:
+	$(PYTHON) -m scripts.compare_datsblack_strategies
