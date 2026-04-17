@@ -1,6 +1,6 @@
 {
-  "turnNo": 308,
-  "nextTurnIn": 0.983,
+  "turnNo": 413,
+  "nextTurnIn": 0.972,
   "size": [
     378,
     378
@@ -8,52 +8,43 @@
   "actionRange": 2,
   "plantations": [
     {
-      "id": "ac9c3f77-abe7-40d3-9c68-fb48015b96ea",
+      "id": "d3e21589-5a04-4c83-bfd7-6e18dc5fa1e6",
       "position": [
-        243,
-        49
+        174,
+        174
       ],
       "isMain": true,
       "isIsolated": false,
-      "immunityUntilTurn": 303,
-      "hp": 40
+      "immunityUntilTurn": 413,
+      "hp": 50
     }
   ],
   "enemy": [],
-  "mountains": [
-    [
-      243,
-      46
-    ],
-    [
-      241,
-      47
-    ]
-  ],
+  "mountains": [],
   "cells": [
     {
       "position": [
-        243,
-        49
+        174,
+        174
       ],
-      "terraformationProgress": 40,
-      "turnsUntilDegradation": 52
+      "terraformationProgress": 15,
+      "turnsUntilDegradation": 57
     }
   ],
   "construction": [
     {
       "position": [
-        242,
-        49
+        173,
+        174
       ],
       "progress": 5
     }
   ],
   "beavers": [],
   "plantationUpgrades": {
-    "points": 10,
+    "points": 13,
     "intervalTurns": 30,
-    "turnsUntilPoints": 22,
+    "turnsUntilPoints": 7,
     "maxPoints": 15,
     "tiers": [
       {
@@ -104,13 +95,13 @@
       "id": "257bd30d-efac-4d05-b9c7-68a98bddc558",
       "forming": false,
       "position": [
-        194,
-        184
+        299,
+        79
       ],
       "radius": 30,
       "nextPosition": [
-        195,
-        183
+        300,
+        78
       ]
     }
   ]
