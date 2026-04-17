@@ -92,11 +92,11 @@ class BeamLiteSearch:
         _ = budget
         scored = [evaluator.score(state, candidate) for candidate in candidates]
         ordered = sorted(scored, key=lambda item: item.score, reverse=True)
-        return (
-            ordered[min(max(self.beam_width, 1), len(ordered)) - 1]
-            if ordered
-            else CandidateScore({}, -1)
-        )
+        if not ordered:
+            return CandidateScore({}, -1)
+        beam_limit = min(max(self.beam_width, 1), len(ordered))
+        top_beam = ordered[:beam_limit]
+        return top_beam[0]
 
 
 @dataclass(frozen=True)
@@ -144,17 +144,19 @@ class CompositeOfflinePolicy(OfflinePolicy):
         best = self.search.choose(state, budget, candidates, self.evaluator)
 
         action = ActionEnvelope(tick=state.tick, payload=best.action, reason=f"policy:{self.name}")
-        valid = isinstance(action.payload.get("ships"), list)
-        if not valid:
+        used_fallback = False
+        if not isinstance(action.payload.get("ships"), list):
             action = self.fallback.fallback(state, budget, "invalid-action-shape")
+            used_fallback = True
+        valid_action = isinstance(action.payload.get("ships"), list)
 
         return DecisionRecord(
             tick=state.tick,
             chosen_action=action,
             candidates=tuple(candidates),
             candidate_scores=tuple(sorted(scored, key=lambda item: item.score, reverse=True)),
-            used_fallback=not valid,
+            used_fallback=used_fallback,
             timed_out=False,
-            valid_action=valid,
+            valid_action=valid_action,
             remaining_budget_ms=budget.deadline_ms,
         )

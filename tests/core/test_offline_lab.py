@@ -14,6 +14,8 @@ from datsteam_core.offline_lab import (
     mine_hard_cases,
     run_manifest_for_policies,
 )
+from datsteam_core.offline_lab.policy import CandidateScore
+from datsteam_core.types.core import CanonicalEntity, CanonicalState, TickBudget
 
 
 def _make_policies() -> list[CompositeOfflinePolicy]:
@@ -64,3 +66,69 @@ def test_hard_case_mining_detects_disagreement_or_low_margin() -> None:
     assert hard_cases.cases
     reasons = {item.reason for item in hard_cases.cases}
     assert "low_margin_decision" in reasons or "policy_disagreement" in reasons
+
+
+def test_beam_lite_search_returns_best_scoring_candidate_even_with_wider_beam() -> None:
+    state = CanonicalState(
+        tick=1,
+        me=(CanonicalEntity(id="m1", x=0, y=0),),
+        enemies=(),
+        metadata={},
+    )
+    candidates = [
+        {"ships": [{"id": "m1", "changeSpeed": 1}]},
+        {"ships": [{"id": "m1", "rotate": 90}]},
+    ]
+    evaluator = WeightedFeatureEvaluator(
+        weights={"bias": 0.0, "has_ships_field": 0.0, "ship_count": 1.0, "enemy_count": 0.0}
+    )
+    # Make candidate[0] strictly better by adding one more command object.
+    candidates[0] = {
+        "ships": [{"id": "m1", "changeSpeed": 1}, {"id": "m1", "rotate": 90}],
+    }
+
+    chosen = BeamLiteSearch(beam_width=2).choose(
+        state=state,
+        budget=TickBudget(tick=1),
+        candidates=candidates,
+        evaluator=evaluator,
+    )
+
+    assert chosen.action == candidates[0]
+
+
+class _InvalidSearch:
+    def choose(  # noqa: PLR0913
+        self,
+        state: CanonicalState,
+        budget: TickBudget,
+        candidates: list[dict[str, object]],
+        evaluator: SafeGreedyEvaluator,
+    ) -> CandidateScore:
+        _ = state
+        _ = budget
+        _ = candidates
+        _ = evaluator
+        return CandidateScore(action={"bad": "shape"}, score=999.0)
+
+
+def test_policy_recomputes_validity_after_fallback_replacement() -> None:
+    policy = CompositeOfflinePolicy(
+        name="fallback-validity",
+        generator=MinimalCandidateGenerator(),
+        evaluator=SafeGreedyEvaluator(),
+        search=_InvalidSearch(),
+        fallback=SafeHoldFallback(),
+    )
+    state = CanonicalState(
+        tick=2,
+        me=(CanonicalEntity(id="m1", x=1, y=1),),
+        enemies=(),
+        metadata={},
+    )
+
+    decision = policy.decide(state, TickBudget(tick=state.tick))
+
+    assert decision.used_fallback is True
+    assert decision.valid_action is True
+    assert decision.chosen_action.payload == {"ships": []}
