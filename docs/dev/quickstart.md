@@ -42,25 +42,20 @@ python -m scripts.summarize_replay logs/replay
 python -m scripts.offline_decision_lab summarize-replay logs/replay
 ```
 
-## 7. Run live DatsBlack harness
-Dry-run (no submit):
+## 7. Run live-safe CLI entrypoints
+```bash
+python -m scripts.cli fixture-run
+python -m scripts.cli datsblack scan
+python -m scripts.cli datsblack map
+python -m scripts.cli datsblack register --mode deathmatch
+python -m scripts.cli datsblack exit --mode deathmatch
+python -m scripts.cli datsblack loop --ticks 3 --dry-run
+python -m scripts.cli datsblack dry-run
+```
+
+Legacy harness remains available for parity:
 ```bash
 python -m games.datsblack.live --dry-run --ticks 3
-```
-
-Scan-only:
-```bash
-python -m games.datsblack.live --scan-only
-```
-
-Register + map cache + live submit:
-```bash
-python -m games.datsblack.live --register --mode royal --map-cache --ticks 3
-```
-
-Deathmatch lifecycle:
-```bash
-python -m games.datsblack.live --register --mode deathmatch --ticks 3 --exit-battle
 ```
 
 ## 8. Replay and map directories

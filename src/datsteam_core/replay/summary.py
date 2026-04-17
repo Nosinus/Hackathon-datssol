@@ -17,6 +17,11 @@ class ReplaySummary:
     non_success_results: int
     fallback_count: int
     parser_unknown_field_count: int
+    dropped_or_invalid_commands: int
+    transport_error_count: int
+    latency_avg_ms: float | None
+    latency_p50_ms: int | None
+    latency_p95_ms: int | None
 
     def as_dict(self) -> dict[str, object]:
         return {
@@ -27,21 +32,39 @@ class ReplaySummary:
             "non_success_results": self.non_success_results,
             "fallback_count": self.fallback_count,
             "parser_unknown_field_count": self.parser_unknown_field_count,
+            "dropped_or_invalid_commands": self.dropped_or_invalid_commands,
+            "transport_error_count": self.transport_error_count,
+            "latency_avg_ms": self.latency_avg_ms,
+            "latency_p50_ms": self.latency_p50_ms,
+            "latency_p95_ms": self.latency_p95_ms,
         }
 
 
 def _to_envelope(payload: dict[str, Any]) -> ReplayTickEnvelope:
-    if payload.get("schema_version") == "replay.v2":
+    if payload.get("schema_version") in {"replay.v2", "replay.v3"}:
+        canonical_state = dict(payload.get("canonical_state", {}))
+        action = dict(payload.get("chosen_action", {}))
         return ReplayTickEnvelope(
-            schema_version="replay.v2",
+            schema_version="replay.v3",
             session_id=str(payload.get("session_id", "")),
             round_id=str(payload.get("round_id", "")),
             turn_id=int(payload.get("turn_id", 0)),
             server_tick=int(payload.get("server_tick", payload.get("turn_id", 0))),
+            state_hash=str(payload.get("state_hash", "")),
+            strategy_id=str(payload.get("strategy_id", "unknown_strategy")),
+            action_reason=str(payload.get("action_reason", action.get("reason", ""))),
             request_payload=dict(payload.get("request_payload", {})),
             response_payload=dict(payload.get("response_payload", {})),
-            canonical_state=dict(payload.get("canonical_state", {})),
-            chosen_action=dict(payload.get("chosen_action", {})),
+            canonical_state=canonical_state,
+            chosen_action=action,
+            validator_result=dict(payload.get("validator_result", {})),
+            request_meta=dict(payload.get("request_meta", {})),
+            response_meta=dict(payload.get("response_meta", {})),
+            transport_error=payload.get("transport_error")
+            if isinstance(payload.get("transport_error"), dict)
+            else None,
+            fallback_used=bool(payload.get("fallback_used", False)),
+            candidate_count=int(payload.get("candidate_count", 0)),
             candidate_actions=list(payload.get("candidate_actions", [])),
             candidate_scores=list(payload.get("candidate_scores", [])),
             latency_ms=payload.get("latency_ms"),
@@ -53,12 +76,23 @@ def _to_envelope(payload: dict[str, Any]) -> ReplayTickEnvelope:
     return upgrade_legacy_record(payload)
 
 
+def _percentile(values: list[int], p: float) -> int | None:
+    if not values:
+        return None
+    ordered = sorted(values)
+    idx = int(round((len(ordered) - 1) * p))
+    return ordered[idx]
+
+
 def summarize_replay_dir(replay_dir: Path) -> ReplaySummary:
     ticks: list[int] = []
     actions = 0
     non_success = 0
     fallback_count = 0
     unknown_count = 0
+    dropped_or_invalid = 0
+    transport_error_count = 0
+    latencies: list[int] = []
 
     files = sorted(replay_dir.glob("tick_*.json"))
     for path in files:
@@ -74,12 +108,25 @@ def summarize_replay_dir(replay_dir: Path) -> ReplaySummary:
         if envelope.response_payload.get("success") is not True:
             non_success += 1
 
-        if any(envelope.fallback_flags.values()):
+        if envelope.fallback_used or any(envelope.fallback_flags.values()):
             fallback_count += 1
 
         unknowns = envelope.parser_extras.get("unknown_fields")
         if isinstance(unknowns, list):
             unknown_count += len(unknowns)
+
+        if envelope.validator_result.get("dropped_invalid", False) or envelope.validation_flags.get(
+            "sanitized", False
+        ):
+            dropped_or_invalid += 1
+
+        if envelope.transport_error is not None:
+            transport_error_count += 1
+
+        if isinstance(envelope.latency_ms, int):
+            latencies.append(envelope.latency_ms)
+
+    avg = (sum(latencies) / len(latencies)) if latencies else None
 
     return ReplaySummary(
         files=len(files),
@@ -89,4 +136,9 @@ def summarize_replay_dir(replay_dir: Path) -> ReplaySummary:
         non_success_results=non_success,
         fallback_count=fallback_count,
         parser_unknown_field_count=unknown_count,
+        dropped_or_invalid_commands=dropped_or_invalid,
+        transport_error_count=transport_error_count,
+        latency_avg_ms=avg,
+        latency_p50_ms=_percentile(latencies, 0.5),
+        latency_p95_ms=_percentile(latencies, 0.95),
     )

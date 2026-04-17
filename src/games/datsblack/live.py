@@ -105,6 +105,7 @@ def main() -> None:
             action_validator=DatsBlackActionValidator(),
             action_sink=sink,
             replay_writer=ReplayWriter(settings.app.runtime.replay_dir),
+            send_margin_ms=settings.app.runtime.send_margin_ms,
         )
 
         outputs: list[dict[str, object]] = []

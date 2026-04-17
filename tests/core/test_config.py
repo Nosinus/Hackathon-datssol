@@ -22,6 +22,7 @@ runtime:
   backoff_multiplier: 1.5
   backoff_max_seconds: 2.5
   accept_gzip: false
+  send_margin_ms: 40
 datsblack:
   mode: royal
   enable_long_scan: false
@@ -34,3 +35,4 @@ datsblack:
     assert settings.datsblack.enable_long_scan is False
     assert settings.app.runtime.backoff_multiplier == 1.5
     assert settings.app.runtime.accept_gzip is False
+    assert settings.app.runtime.send_margin_ms == 40
