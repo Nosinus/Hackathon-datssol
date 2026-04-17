@@ -1,6 +1,6 @@
 {
-  "turnNo": 342,
-  "nextTurnIn": 0.503,
+  "turnNo": 504,
+  "nextTurnIn": 1.014,
   "size": [
     378,
     378
@@ -8,44 +8,40 @@
   "actionRange": 2,
   "plantations": [
     {
-      "id": "5a4fd401-6383-4511-b8a0-de52a9db6e23",
+      "id": "fabed6a5-7ad6-407a-91e4-bd1c9fc88143",
       "position": [
-        305,
-        247
+        110,
+        174
       ],
       "isMain": true,
       "isIsolated": false,
-      "immunityUntilTurn": 344,
+      "immunityUntilTurn": 493,
       "hp": 50
     }
   ],
   "enemy": [],
   "mountains": [
     [
-      306,
-      244
-    ],
-    [
-      305,
-      249
+      111,
+      172
     ]
   ],
   "cells": [
     {
       "position": [
-        305,
-        247
+        110,
+        174
       ],
-      "terraformationProgress": 5,
-      "turnsUntilDegradation": 59
+      "terraformationProgress": 70,
+      "turnsUntilDegradation": 46
     }
   ],
   "construction": [],
   "beavers": [],
   "plantationUpgrades": {
-    "points": 11,
+    "points": 15,
     "intervalTurns": 30,
-    "turnsUntilPoints": 18,
+    "turnsUntilPoints": 0,
     "maxPoints": 15,
     "tiers": [
       {
@@ -93,20 +89,20 @@
   "meteoForecasts": [
     {
       "kind": "earthquake",
-      "turnsUntil": 5
+      "turnsUntil": 1
     },
     {
       "kind": "sandstorm",
-      "id": "9f29296c-1399-4090-968f-708b3733ea64",
+      "id": "3f3ddf1e-8793-46d1-ae9b-c55607211cc9",
       "forming": false,
       "position": [
-        276,
-        276
+        86,
+        292
       ],
       "radius": 30,
       "nextPosition": [
-        277,
-        277
+        85,
+        293
       ]
     }
   ]

@@ -95,6 +95,16 @@ class HttpTransport:
             self._client.close()
             self._client = None
 
+    def _request_timeout(self, *, method: str, timeout_seconds: float | None) -> float | httpx.Timeout:
+        effective = timeout_seconds or self.timeout_seconds
+        if method != "GET":
+            return effective
+
+        # GET requests bootstrap or refresh state and can tolerate a longer TLS/connect phase
+        # than the hot read budget, while POST commands should keep their tighter deadline.
+        connect_timeout = max(effective, min(5.0, max(self.timeout_seconds, 3.0)))
+        return httpx.Timeout(effective, connect=connect_timeout)
+
     def _request(
         self,
         method: str,
@@ -123,7 +133,7 @@ class HttpTransport:
                     path,
                     headers=request_headers,
                     json=body,
-                    timeout=timeout_seconds or self.timeout_seconds,
+                    timeout=self._request_timeout(method=method, timeout_seconds=timeout_seconds),
                 )
                 latency_ms = int((time.perf_counter() - start) * 1000)
                 self.last_request_meta = RequestMeta(

@@ -31,7 +31,7 @@ class _FakeClient:
         *,
         headers: dict[str, str],
         json: dict[str, object] | None,
-        timeout: float | None = None,
+        timeout: object | None = None,
     ) -> httpx.Response:
         _ = (method, path, headers, json, timeout)
         return self._response
@@ -51,7 +51,7 @@ class _NetworkErrorClient:
         *,
         headers: dict[str, str],
         json: dict[str, object] | None,
-        timeout: float | None = None,
+        timeout: object | None = None,
     ) -> httpx.Response:
         _ = (method, path, headers, json, timeout)
         raise httpx.ConnectError("boom")
@@ -134,3 +134,39 @@ def test_transport_reuses_single_client(monkeypatch: pytest.MonkeyPatch) -> None
     transport.get_validated("/api/scan", ScanResponse)
 
     assert calls["count"] == 1
+
+
+def test_transport_uses_longer_connect_timeout_for_gets(monkeypatch: pytest.MonkeyPatch) -> None:
+    request = httpx.Request("GET", "https://example.test/api/scan")
+    response = httpx.Response(
+        200,
+        json={"scan": {"myShips": [], "enemyShips": [], "zone": None, "tick": 1}, "success": True},
+        request=request,
+    )
+    captured: dict[str, object] = {}
+
+    class _CapturingClient(_FakeClient):
+        def request(
+            self,
+            method: str,
+            path: str,
+            *,
+            headers: dict[str, str],
+            json: dict[str, object] | None,
+            timeout: object | None = None,
+        ) -> httpx.Response:
+            captured["method"] = method
+            captured["timeout"] = timeout
+            return super().request(method, path, headers=headers, json=json, timeout=timeout)
+
+    monkeypatch.setattr(
+        "datsteam_core.transport.http.httpx.Client",
+        lambda *a, **k: _CapturingClient(response),
+    )
+    transport = HttpTransport(base_url="https://example.test", default_headers={}, timeout_seconds=5.0)
+    transport.get_validated("/api/scan", ScanResponse, timeout_seconds=0.6)
+
+    assert captured["method"] == "GET"
+    assert isinstance(captured["timeout"], httpx.Timeout)
+    assert captured["timeout"].connect == 5.0
+    assert captured["timeout"].read == 0.6
