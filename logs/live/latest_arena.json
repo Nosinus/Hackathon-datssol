@@ -1,6 +1,6 @@
 {
-  "turnNo": 291,
-  "nextTurnIn": 1.102,
+  "turnNo": 295,
+  "nextTurnIn": 0.96,
   "size": [
     378,
     378
@@ -36,16 +36,24 @@
         103,
         258
       ],
-      "terraformationProgress": 55,
-      "turnsUntilDegradation": 49
+      "terraformationProgress": 75,
+      "turnsUntilDegradation": 45
     }
   ],
-  "construction": [],
+  "construction": [
+    {
+      "position": [
+        104,
+        258
+      ],
+      "progress": 5
+    }
+  ],
   "beavers": [],
   "plantationUpgrades": {
     "points": 9,
     "intervalTurns": 30,
-    "turnsUntilPoints": 9,
+    "turnsUntilPoints": 5,
     "maxPoints": 15,
     "tiers": [
       {
@@ -96,13 +104,13 @@
       "id": "257bd30d-efac-4d05-b9c7-68a98bddc558",
       "forming": false,
       "position": [
-        177,
-        201
+        181,
+        197
       ],
       "radius": 30,
       "nextPosition": [
-        178,
-        200
+        182,
+        196
       ]
     }
   ]
