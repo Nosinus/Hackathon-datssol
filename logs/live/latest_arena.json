@@ -1,6 +1,6 @@
 {
-  "turnNo": 413,
-  "nextTurnIn": 0.972,
+  "turnNo": 419,
+  "nextTurnIn": 0.99,
   "size": [
     378,
     378
@@ -27,8 +27,8 @@
         174,
         174
       ],
-      "terraformationProgress": 15,
-      "turnsUntilDegradation": 57
+      "terraformationProgress": 45,
+      "turnsUntilDegradation": 51
     }
   ],
   "construction": [
@@ -44,7 +44,7 @@
   "plantationUpgrades": {
     "points": 13,
     "intervalTurns": 30,
-    "turnsUntilPoints": 7,
+    "turnsUntilPoints": 1,
     "maxPoints": 15,
     "tiers": [
       {
@@ -95,13 +95,13 @@
       "id": "257bd30d-efac-4d05-b9c7-68a98bddc558",
       "forming": false,
       "position": [
-        299,
-        79
+        305,
+        73
       ],
       "radius": 30,
       "nextPosition": [
-        300,
-        78
+        306,
+        72
       ]
     }
   ]
