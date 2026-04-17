@@ -50,6 +50,20 @@ def test_load_from_env_uses_environment(monkeypatch) -> None:
     assert settings.app.runtime.retries == 3
 
 
+def test_load_from_env_keeps_existing_contract_and_optional_timeouts(monkeypatch) -> None:
+    monkeypatch.setenv("DATASTEAM_TIMEOUT_SECONDS", "5.0")
+    monkeypatch.setenv("DATASTEAM_SEND_MARGIN_MS", "100")
+    monkeypatch.setenv("DATASTEAM_HOT_TIMEOUT_SECONDS", "0.45")
+    monkeypatch.setenv("DATASTEAM_LOGS_TIMEOUT_SECONDS", "2.0")
+
+    settings = load_from_env(env_file=None)
+
+    assert settings.app.runtime.timeout_seconds == 5.0
+    assert settings.app.runtime.send_margin_ms == 100
+    assert settings.app.runtime.hot_timeout_seconds == 0.45
+    assert settings.app.runtime.logs_timeout_seconds == 2.0
+
+
 def test_load_from_env_reads_dotenv_file(tmp_path: Path, monkeypatch) -> None:
     dotenv = tmp_path / ".env"
     dotenv.write_text(

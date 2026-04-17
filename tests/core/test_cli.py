@@ -127,3 +127,16 @@ def test_cli_datssol_dry_run(monkeypatch, capsys) -> None:
     assert rc == 0
     assert out["dry_run"] is True
     assert isinstance(out["action"], dict)
+
+
+def test_cli_datssol_doctor(monkeypatch, capsys) -> None:
+    monkeypatch.setenv("DATASTEAM_GAME", "datssol")
+    monkeypatch.setenv("DATASTEAM_API_BASE_URL", "https://games-test.datsteam.dev")
+    monkeypatch.setenv("DATASTEAM_AUTH_HEADER", "X-Auth-Token")
+    monkeypatch.setenv("DATASTEAM_API_KEY", "token")
+    monkeypatch.setattr("sys.argv", ["cli", "datssol", "doctor"])
+    rc = cli.main()
+    out = json.loads(capsys.readouterr().out)
+    assert rc == 0
+    assert out["token_loaded"] is True
+    assert out["auth_header"] == "X-Auth-Token"

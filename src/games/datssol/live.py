@@ -96,7 +96,10 @@ def main() -> None:
             if not request.has_useful_action():
                 result = {"code": 0, "errors": ["no useful action"], "semantic_success": False}
             else:
-                outcome = client.submit_command(request)
+                outcome = client.submit_command(
+                    request,
+                    next_turn_in_seconds=client.last_next_turn_in_seconds,
+                )
                 result = outcome.response.model_dump(exclude_none=True)
                 result["semantic_success"] = outcome.semantic_success
 

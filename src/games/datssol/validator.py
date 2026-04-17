@@ -28,6 +28,8 @@ class DatsSolSemanticValidator:
         cleaned: list[dict[str, object]] = []
         seen_paths: set[tuple[tuple[int, int], tuple[int, int], tuple[int, int]]] = set()
         errors: list[str] = []
+        ownership = _ownership(plantations)
+        owned_points = set(ownership.keys())
 
         signal_range = _safe_int(state.metadata.get("signal_range"), default=3)
         action_range = _safe_int(state.metadata.get("action_range"), default=1)
@@ -41,11 +43,14 @@ class DatsSolSemanticValidator:
                     errors.append("invalid_path_shape")
                     continue
                 author, exit_point, target = path
-                if author not in _owned_points(plantations):
+                if author not in owned_points:
                     errors.append("unknown_author")
                     continue
-                if exit_point not in _owned_points(plantations):
+                if exit_point not in owned_points:
                     errors.append("unknown_exit")
+                    continue
+                if ownership.get(author, {}).get("is_isolated") is True:
+                    errors.append("isolated_author")
                     continue
                 if not in_square_range(author, exit_point, signal_range):
                     errors.append("exit_out_of_signal_range")
@@ -82,8 +87,10 @@ class DatsSolSemanticValidator:
                     and all(isinstance(v, int) for v in item)
                 ):
                     points.append([item[0], item[1]])
-            if len(points) >= 2:
+            if len(points) >= 2 and _relocate_route_is_possible(points, ownership, signal_range):
                 out["relocateMain"] = points
+            elif len(points) >= 2:
+                errors.append("invalid_relocate_main_route")
 
         semantic_success = bool(
             out.get("command")
@@ -115,14 +122,14 @@ def _extract_path(item: object) -> tuple[tuple[int, int], tuple[int, int], tuple
     return (out[0], out[1], out[2])
 
 
-def _owned_points(plantations: dict[str, object]) -> set[tuple[int, int]]:
-    out: set[tuple[int, int]] = set()
+def _ownership(plantations: dict[str, object]) -> dict[tuple[int, int], dict[str, object]]:
+    out: dict[tuple[int, int], dict[str, object]] = {}
     for item in plantations.values():
         if not isinstance(item, dict):
             continue
         pos = item.get("position")
         if isinstance(pos, list) and len(pos) == 2 and all(isinstance(v, int) for v in pos):
-            out.add((pos[0], pos[1]))
+            out[(pos[0], pos[1])] = item
     return out
 
 
@@ -139,3 +146,27 @@ def _safe_int(value: object, *, default: int) -> int:
     if isinstance(value, int) and not isinstance(value, bool):
         return value
     return default
+
+
+def _relocate_route_is_possible(
+    route: list[list[int]],
+    ownership: dict[tuple[int, int], dict[str, object]],
+    signal_range: int,
+) -> bool:
+    if len(route) < 2:
+        return False
+    points = [(item[0], item[1]) for item in route]
+    first = ownership.get(points[0])
+    if not isinstance(first, dict) or not bool(first.get("is_main")):
+        return False
+    for idx, point in enumerate(points):
+        if point not in ownership:
+            return False
+        if idx > 0 and ownership[point].get("is_isolated") is True:
+            return False
+        if idx == 0:
+            continue
+        prev = points[idx - 1]
+        if not in_square_range(prev, point, signal_range):
+            return False
+    return True

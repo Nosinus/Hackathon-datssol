@@ -23,3 +23,6 @@ Assume `docs/input/` is canonical for text/contract snapshots while `docs/input/
 
 ## A8. Offline decision lab assumption
 Assume policy quality should be improved primarily through deterministic replay/manifests and comparable metrics before any live experimentation.
+
+## A9. Frozen local env contract for DatsSol live
+Assume current operator env names and semantics are frozen; only additive optional overrides are allowed for endpoint-specific timeouts.
