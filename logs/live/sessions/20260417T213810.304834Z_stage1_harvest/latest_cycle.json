@@ -1,7 +1,7 @@
 {
-  "timestamp": "2026-04-17T21:42:25.885372+00:00",
-  "turnNo": 265,
-  "nextTurnIn": 0.994,
+  "timestamp": "2026-04-17T21:42:31.872873+00:00",
+  "turnNo": 271,
+  "nextTurnIn": 1.002,
   "idle": false,
   "submit_attempted": true,
   "submit_skipped_reason": null,
@@ -36,8 +36,8 @@
     47
   ],
   "main_hp": 50,
-  "main_progress": 25,
-  "main_ttf": 8,
+  "main_progress": 55,
+  "main_ttf": 5,
   "plantation_count": 1,
   "isolated_count": 0,
   "critical_bridge_count": 0,
@@ -59,13 +59,13 @@
       "id": "257bd30d-efac-4d05-b9c7-68a98bddc558",
       "forming": false,
       "position": [
-        151,
-        227
+        157,
+        221
       ],
       "radius": 30,
       "nextPosition": [
-        152,
-        226
+        158,
+        220
       ]
     }
   ],
@@ -174,6 +174,6 @@
   ],
   "choice_margin": 0.43,
   "main_under_threat": false,
-  "latency_ms": 274,
+  "latency_ms": 288,
   "duplicate_turn_seen": false
 }
