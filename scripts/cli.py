@@ -35,6 +35,12 @@ def _parser() -> argparse.ArgumentParser:
     loop = db_sub.add_parser("loop")
     loop.add_argument("--ticks", type=int, default=1)
     loop.add_argument("--dry-run", action="store_true")
+    loop.add_argument(
+        "--fixture",
+        type=Path,
+        default=Path("tests/fixtures/datsblack_scan_multi_tick.json"),
+        help="Fixture path for offline dry-run loop mode",
+    )
 
     db_sub.add_parser("dry-run")
     return parser
@@ -46,7 +52,7 @@ def _run_fixture(fixture: Path) -> int:
     if not fixture.exists():
         print(json.dumps({"error": f"fixture does not exist: {fixture}"}))
         return 2
-    fixture_main()
+    fixture_main(fixture_path=fixture)
     return 0
 
 
@@ -58,6 +64,46 @@ def _require_auth(settings: FullSettings) -> None:
 
 
 def _run_datsblack(args: argparse.Namespace, settings: FullSettings) -> int:
+    if args.command == "dry-run":
+        sample = ShipsCommands(ships=[])
+        print(json.dumps({"dry_run": True, "validated": sample.model_dump(exclude_none=True)}))
+        return 0
+
+    if args.command == "loop":
+        from datsteam_core.replay.store import ReplayWriter
+        from datsteam_core.runtime.loop import RuntimeLoop
+        from datsteam_core.types.core import ActionSink
+        from games.datsblack.adapter import DatsBlackStateProvider
+        from games.datsblack.strategy.baseline import SafeBaselineStrategy
+        from games.datsblack.strategy.legal import DatsBlackActionValidator
+        from scripts.run_runtime_fixture_loop import FixtureStateProvider
+
+        if args.dry_run:
+            if not args.fixture.exists():
+                print(json.dumps({"error": f"fixture does not exist: {args.fixture}"}))
+                return 2
+            state_provider = FixtureStateProvider(args.fixture)
+            sink = DryRunActionSink()
+        else:
+            _require_auth(settings)
+            client = build_client(settings)
+            state_provider = DatsBlackStateProvider(client=client)
+            sink = client_action_sink(client)
+
+        sink_typed: ActionSink = sink
+        loop = RuntimeLoop(
+            state_provider=state_provider,
+            strategy=SafeBaselineStrategy(),
+            action_validator=DatsBlackActionValidator(),
+            action_sink=sink_typed,
+            replay_writer=ReplayWriter(settings.app.runtime.replay_dir),
+            send_margin_ms=settings.app.runtime.send_margin_ms,
+        )
+
+        outputs = [loop.step() for _ in range(args.ticks)]
+        print(json.dumps(outputs, ensure_ascii=False, indent=2))
+        return 0
+
     _require_auth(settings)
     client = build_client(settings)
 
@@ -85,32 +131,6 @@ def _run_datsblack(args: argparse.Namespace, settings: FullSettings) -> int:
                 client.exit_deathmatch().model_dump(exclude_none=True), ensure_ascii=False, indent=2
             )
         )
-        return 0
-
-    if args.command == "dry-run":
-        sample = ShipsCommands(ships=[])
-        print(json.dumps({"dry_run": True, "validated": sample.model_dump(exclude_none=True)}))
-        return 0
-
-    if args.command == "loop":
-        from datsteam_core.replay.store import ReplayWriter
-        from datsteam_core.runtime.loop import RuntimeLoop
-        from datsteam_core.types.core import ActionSink
-        from games.datsblack.adapter import DatsBlackStateProvider
-        from games.datsblack.strategy.baseline import SafeBaselineStrategy
-        from games.datsblack.strategy.legal import DatsBlackActionValidator
-
-        sink: ActionSink = DryRunActionSink() if args.dry_run else client_action_sink(client)
-        loop = RuntimeLoop(
-            state_provider=DatsBlackStateProvider(client=client),
-            strategy=SafeBaselineStrategy(),
-            action_validator=DatsBlackActionValidator(),
-            action_sink=sink,
-            replay_writer=ReplayWriter(settings.app.runtime.replay_dir),
-        )
-
-        outputs = [loop.step() for _ in range(args.ticks)]
-        print(json.dumps(outputs, ensure_ascii=False, indent=2))
         return 0
 
     print(json.dumps({"error": f"Unsupported command: {args.command}"}))
