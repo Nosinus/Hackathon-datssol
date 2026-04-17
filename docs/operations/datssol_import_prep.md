@@ -1,4 +1,4 @@
-# DatsSol contract import prep
+# DatsSol contract import prep (historical + incremental updates)
 
 ## Canonical location
 Put release artifacts in `docs/input/datssol_imports/`.
@@ -24,5 +24,5 @@ python -m scripts.prepare_datssol_import --tag 20260417T180000Z
 5. Add fixtures under `tests/fixtures/datssol/`.
 6. Run smoke checks (`pytest`, `ruff`, `mypy`, fixture run).
 
-This prep does **not** implement DatsSol mechanics before official release.
+The initial release import is complete; use this checklist for future contract updates.
 Дополнительный handoff-чеклист: `docs/dev/release_hour_import.md`.

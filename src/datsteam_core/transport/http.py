@@ -103,7 +103,7 @@ class HttpTransport:
         *,
         retryable: bool,
         timeout_seconds: float | None = None,
-    ) -> dict[str, Any]:
+    ) -> Any:
         request_headers = dict(self.default_headers)
         if self.accept_gzip:
             request_headers["Accept-Encoding"] = "gzip"
@@ -154,7 +154,7 @@ class HttpTransport:
                         response_text=response.text[:300],
                     )
 
-                payload = self._parse_json_object(
+                payload = self._parse_json_payload(
                     response, method=method, path=path, attempt=attempt
                 )
                 return payload
@@ -200,9 +200,9 @@ class HttpTransport:
 
         raise RuntimeError("unreachable")
 
-    def _parse_json_object(
+    def _parse_json_payload(
         self, response: httpx.Response, *, method: str, path: str, attempt: int
-    ) -> dict[str, Any]:
+    ) -> Any:
         content = response.content
 
         try:
@@ -215,13 +215,6 @@ class HttpTransport:
                 attempt=attempt,
             ) from exc
 
-        if not isinstance(payload, dict):
-            raise TransportJsonDecodeError(
-                "JSON payload must be object",
-                method=method,
-                path=path,
-                attempt=attempt,
-            )
         return payload
 
     def get_validated(
@@ -232,6 +225,13 @@ class HttpTransport:
         timeout_seconds: float | None = None,
     ) -> BaseModel:
         raw = self._request("GET", path, retryable=True, timeout_seconds=timeout_seconds)
+        if not isinstance(raw, dict):
+            raise TransportJsonDecodeError(
+                "JSON payload must be object",
+                method="GET",
+                path=path,
+                attempt=1,
+            )
         try:
             return model.model_validate(raw)
         except ValidationError as exc:
@@ -258,6 +258,13 @@ class HttpTransport:
             retryable=retryable,
             timeout_seconds=timeout_seconds,
         )
+        if not isinstance(raw, dict):
+            raise TransportJsonDecodeError(
+                "JSON payload must be object",
+                method="POST",
+                path=path,
+                attempt=1,
+            )
         try:
             return model.model_validate(raw)
         except ValidationError as exc:
@@ -267,3 +274,11 @@ class HttpTransport:
                 path=path,
                 attempt=1,
             ) from exc
+
+    def get_json(
+        self,
+        path: str,
+        *,
+        timeout_seconds: float | None = None,
+    ) -> Any:
+        return self._request("GET", path, retryable=True, timeout_seconds=timeout_seconds)

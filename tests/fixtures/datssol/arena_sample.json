@@ -1,0 +1,55 @@
+{
+  "turnNo": 91,
+  "nextTurnIn": 0.92,
+  "size": [800, 600],
+  "actionRange": 2,
+  "signalRange": 3,
+  "visionRange": 3,
+  "settlementLimit": 30,
+  "plantations": [
+    {
+      "id": 1,
+      "position": [396, 303],
+      "isMain": true,
+      "isIsolated": false,
+      "immunityUntilTurn": 93,
+      "hp": 50
+    },
+    {
+      "id": 2,
+      "position": [397, 303],
+      "isMain": false,
+      "isIsolated": false,
+      "immunityUntilTurn": null,
+      "hp": 50
+    }
+  ],
+  "enemy": [
+    {"id": 17, "position": [412, 301], "hp": 46}
+  ],
+  "mountains": [[399, 304]],
+  "cells": [
+    {"position": [396, 303], "terraformationProgress": 35, "turnsUntilDegradation": 80}
+  ],
+  "construction": [
+    {"position": [396, 302], "progress": 15}
+  ],
+  "beavers": [
+    {"id": 9, "position": [402, 309], "hp": 100}
+  ],
+  "plantationUpgrades": {
+    "points": 1,
+    "intervalTurns": 30,
+    "turnsUntilPoints": 29,
+    "maxPoints": 15,
+    "tiers": [
+      {"name": "repair_power", "current": 0, "max": 3},
+      {"name": "max_hp", "current": 0, "max": 5},
+      {"name": "settlement_limit", "current": 0, "max": 10}
+    ]
+  },
+  "meteoForecasts": [
+    {"kind": "earthquake", "turnsUntil": 7},
+    {"kind": "sandstorm", "turnsUntil": 3, "id": 1, "forming": true}
+  ]
+}

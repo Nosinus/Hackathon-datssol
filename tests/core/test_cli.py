@@ -109,3 +109,21 @@ def test_cli_ops_create_manifest(monkeypatch, tmp_path: Path, capsys) -> None:
     assert rc == 0
     assert out["policy_id"] == "p1"
     assert (tmp_path / "run.json").exists()
+
+
+def test_cli_datssol_dry_run(monkeypatch, capsys) -> None:
+    monkeypatch.setattr(
+        "sys.argv",
+        [
+            "cli",
+            "datssol",
+            "dry-run",
+            "--fixture",
+            "tests/fixtures/datssol/arena_sample.json",
+        ],
+    )
+    rc = cli.main()
+    out = json.loads(capsys.readouterr().out)
+    assert rc == 0
+    assert out["dry_run"] is True
+    assert isinstance(out["action"], dict)

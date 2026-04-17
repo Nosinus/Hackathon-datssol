@@ -9,8 +9,15 @@ from urllib.parse import urlparse
 
 from datsteam_core.config.settings import FullSettings
 from datsteam_core.ops import build_run_manifest, load_run_manifest, save_run_manifest
+from datsteam_core.types.core import ActionSink, CanonicalState, StateProvider, TickBudget
 from games.datsblack.live import DryRunActionSink, build_client, client_action_sink, load_settings
 from games.datsblack.models.raw import ShipsCommands
+from games.datssol.adapter import DatsSolActionSink, DatsSolStateProvider
+from games.datssol.api.client import DatsSolClient
+from games.datssol.canonical.state import to_canonical
+from games.datssol.models.raw import ArenaResponse, CommandRequest
+from games.datssol.strategy.baseline import DatsSolBaselineStrategy
+from games.datssol.strategy.legal import DatsSolActionValidator
 
 
 def _parser() -> argparse.ArgumentParser:
@@ -51,6 +58,27 @@ def _parser() -> argparse.ArgumentParser:
     loop.add_argument("--environment", type=str, default="local")
 
     db_sub.add_parser("dry-run")
+
+    ds = sub.add_parser("datssol", help="DatsSol live commands")
+    ds_sub = ds.add_subparsers(dest="command", required=True)
+    ds_sub.add_parser("arena")
+    ds_sub.add_parser("logs")
+    ds_dry = ds_sub.add_parser("dry-run")
+    ds_dry.add_argument(
+        "--fixture",
+        type=Path,
+        default=Path("tests/fixtures/datssol/arena_sample.json"),
+    )
+    ds_cmd = ds_sub.add_parser("command")
+    ds_cmd.add_argument("--from-file", type=Path, required=True)
+    ds_loop = ds_sub.add_parser("loop")
+    ds_loop.add_argument("--ticks", type=int, default=1)
+    ds_loop.add_argument("--dry-run", action="store_true")
+    ds_loop.add_argument(
+        "--fixture",
+        type=Path,
+        default=Path("tests/fixtures/datssol/arena_sample.json"),
+    )
 
     ops = sub.add_parser("ops", help="Operational utilities")
     ops_sub = ops.add_subparsers(dest="command", required=True)
@@ -96,7 +124,6 @@ def _run_datsblack(args: argparse.Namespace, settings: FullSettings) -> int:
     if args.command == "loop":
         from datsteam_core.replay.store import ReplayWriter
         from datsteam_core.runtime.loop import RuntimeLoop
-        from datsteam_core.types.core import ActionSink
         from games.datsblack.adapter import DatsBlackStateProvider
         from games.datsblack.strategy.baseline import SafeBaselineStrategy
         from games.datsblack.strategy.legal import DatsBlackActionValidator
@@ -117,20 +144,19 @@ def _run_datsblack(args: argparse.Namespace, settings: FullSettings) -> int:
             if not args.fixture.exists():
                 print(json.dumps({"error": f"fixture does not exist: {args.fixture}"}))
                 return 2
-            state_provider = FixtureStateProvider(args.fixture)
-            sink = DryRunActionSink()
+            state_provider: StateProvider = FixtureStateProvider(args.fixture)
+            sink: ActionSink = DryRunActionSink()
         else:
             _require_auth(settings)
             client = build_client(settings)
             state_provider = DatsBlackStateProvider(client=client)
             sink = client_action_sink(client)
 
-        sink_typed: ActionSink = sink
         loop = RuntimeLoop(
             state_provider=state_provider,
             strategy=SafeBaselineStrategy(),
             action_validator=DatsBlackActionValidator(),
-            action_sink=sink_typed,
+            action_sink=sink,
             replay_writer=ReplayWriter(
                 settings.app.runtime.replay_dir,
                 session_id=manifest.session_id,
@@ -179,6 +205,142 @@ def _run_datsblack(args: argparse.Namespace, settings: FullSettings) -> int:
         return 0
 
     print(json.dumps({"error": f"Unsupported command: {args.command}"}))
+    return 2
+
+
+class _DatsSolFixtureProvider:
+    def __init__(self, fixture_path: Path) -> None:
+        payload = json.loads(fixture_path.read_text(encoding="utf-8"))
+        states = payload if isinstance(payload, list) else [payload]
+        self._states = [to_canonical(ArenaResponse.model_validate(item)).state for item in states]
+        self._idx = 0
+
+    def poll(self) -> CanonicalState:
+        if self._idx >= len(self._states):
+            state = self._states[-1]
+        else:
+            state = self._states[self._idx]
+            self._idx += 1
+        return state
+
+
+class _DatsSolDryRunActionSink:
+    def submit(self, action: object) -> dict[str, object]:
+        payload = getattr(action, "payload", {})
+        if not isinstance(payload, dict) or not payload:
+            return {"code": 0, "errors": ["dry-run: skipped submit"]}
+        return {"code": 0, "errors": [], "dry_run": True, "payload": payload}
+
+
+def _build_datssol_client(settings: FullSettings) -> DatsSolClient:
+    from datsteam_core.auth.headers import HeaderTokenAuth
+    from datsteam_core.transport.http import HttpTransport, RetryPolicy
+
+    auth_headers = HeaderTokenAuth(
+        header_name=settings.app.auth.header_name,
+        token=settings.app.auth.token,
+    ).headers()
+    transport = HttpTransport(
+        base_url=settings.app.api_base_url,
+        default_headers=auth_headers,
+        timeout_seconds=settings.app.runtime.timeout_seconds,
+        retry_policy=RetryPolicy(
+            retries=settings.app.runtime.retries,
+            backoff_initial_seconds=settings.app.runtime.backoff_initial_seconds,
+            backoff_multiplier=settings.app.runtime.backoff_multiplier,
+            backoff_max_seconds=settings.app.runtime.backoff_max_seconds,
+        ),
+        accept_gzip=settings.app.runtime.accept_gzip,
+    )
+    return DatsSolClient(transport=transport)
+
+
+def _run_datssol(args: argparse.Namespace, settings: FullSettings) -> int:
+    if args.command == "dry-run":
+        if not args.fixture.exists():
+            print(json.dumps({"error": f"fixture does not exist: {args.fixture}"}))
+            return 2
+        payload = json.loads(args.fixture.read_text(encoding="utf-8"))
+        arena = ArenaResponse.model_validate(payload[0] if isinstance(payload, list) else payload)
+        state = to_canonical(arena).state
+        strategy = DatsSolBaselineStrategy()
+        action = DatsSolActionValidator().sanitize(
+            strategy.choose_action(state, budget=TickBudget(tick=state.tick)),
+            state,
+        )
+        print(
+            json.dumps(
+                {
+                    "dry_run": True,
+                    "turn": state.tick,
+                    "action": action.payload,
+                    "reason": action.reason,
+                },
+                ensure_ascii=False,
+                indent=2,
+            )
+        )
+        return 0
+
+    if args.command == "loop" and args.dry_run:
+        client: DatsSolClient | None = None
+    else:
+        _require_auth(settings)
+        client = _build_datssol_client(settings)
+
+    if args.command == "arena":
+        assert client is not None
+        print(
+            json.dumps(
+                client.arena().model_dump(exclude_none=True), ensure_ascii=False, indent=2
+            )
+        )
+        return 0
+
+    if args.command == "logs":
+        assert client is not None
+        print(json.dumps(client.logs().model_dump(exclude_none=True), ensure_ascii=False, indent=2))
+        return 0
+
+    if args.command == "command":
+        assert client is not None
+        body = json.loads(args.from_file.read_text(encoding="utf-8"))
+        payload = CommandRequest.model_validate(body)
+        print(
+            json.dumps(
+                client.command(payload).model_dump(exclude_none=True),
+                ensure_ascii=False,
+                indent=2,
+            )
+        )
+        return 0
+
+    if args.command == "loop":
+        from datsteam_core.replay.store import ReplayWriter
+        from datsteam_core.runtime.loop import RuntimeLoop
+
+        if args.dry_run:
+            if not args.fixture.exists():
+                print(json.dumps({"error": f"fixture does not exist: {args.fixture}"}))
+                return 2
+            state_provider: StateProvider = _DatsSolFixtureProvider(args.fixture)
+            sink: ActionSink = _DatsSolDryRunActionSink()
+        else:
+            assert client is not None
+            state_provider = DatsSolStateProvider(client=client)
+            sink = DatsSolActionSink(client=client)
+        loop = RuntimeLoop(
+            state_provider=state_provider,
+            strategy=DatsSolBaselineStrategy(),
+            action_validator=DatsSolActionValidator(),
+            action_sink=sink,
+            replay_writer=ReplayWriter(settings.app.runtime.replay_dir),
+            send_margin_ms=settings.app.runtime.send_margin_ms,
+        )
+        outputs = [loop.step() for _ in range(args.ticks)]
+        print(json.dumps({"results": outputs}, ensure_ascii=False, indent=2))
+        return 0
+
     return 2
 
 
@@ -249,7 +411,13 @@ def _run_ops(args: argparse.Namespace, settings: FullSettings) -> int:
             "total_ms_avg": int(sum(total_samples) / len(total_samples)) if total_samples else None,
         }
         if payload["total_ms_avg"] is not None:
-            total = int(payload["total_ms_avg"])
+            total_raw = payload["total_ms_avg"]
+            if isinstance(total_raw, int):
+                total = total_raw
+            elif isinstance(total_raw, float | str):
+                total = int(total_raw)
+            else:
+                total = 50
             payload["recommended_send_margin_ms"] = max(50, total * 2)
         print(json.dumps(payload, ensure_ascii=False, indent=2))
         return 0
@@ -266,6 +434,8 @@ def main() -> int:
         return _run_fixture(args.fixture)
     if args.scope == "datsblack":
         return _run_datsblack(args, settings)
+    if args.scope == "datssol":
+        return _run_datssol(args, settings)
     if args.scope == "ops":
         return _run_ops(args, settings)
     return 2

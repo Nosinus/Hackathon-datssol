@@ -112,7 +112,7 @@ def summarize_replay_dir(replay_dir: Path) -> ReplaySummary:
         if isinstance(action, dict):
             actions += 1
 
-        if envelope.response_payload.get("success") is not True:
+        if _infer_result_success(envelope.response_payload) is not True:
             non_success += 1
 
         if envelope.fallback_used or any(envelope.fallback_flags.values()):
@@ -157,3 +157,16 @@ def summarize_replay_dir(replay_dir: Path) -> ReplaySummary:
         run_ids=sorted(run_ids),
         policy_ids=sorted(policy_ids),
     )
+
+
+def _infer_result_success(payload: dict[str, object]) -> bool | None:
+    success = payload.get("success")
+    if isinstance(success, bool):
+        return success
+    code = payload.get("code")
+    errors = payload.get("errors")
+    if isinstance(code, int):
+        if isinstance(errors, list):
+            return code == 0 and len(errors) == 0
+        return code == 0
+    return None

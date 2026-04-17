@@ -5,7 +5,7 @@
 - convert raw payload to canonical state,
 - choose baseline action,
 - sanitize/validate action,
-- submit action,
+- submit action (or skip submit safely if no useful DatsSol action exists),
 - write replay telemetry (`replay.v3` envelope + run manifest metadata lineage).
 
 ## Offline decision lab (iteration loop)

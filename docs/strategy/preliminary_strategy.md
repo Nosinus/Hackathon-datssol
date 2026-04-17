@@ -13,6 +13,12 @@ Use a conservative deterministic baseline that prioritizes:
 - Bias toward movement only when zone pressure increases.
 - Always emit syntactically valid `ships` command bundle.
 
+## Current DatsSol v1 baseline
+- Expansion-first from non-isolated plantations with deterministic target ordering.
+- Emits real `command[].path` payloads; never emits malformed/empty submit body.
+- Opportunistically buys upgrades when points are available and no safe build is selected.
+- Prioritizes safe legality and HQ/network continuity over aggressive sabotage.
+
 ## Offline algorithm scaffolding now available
 - safe greedy scorer,
 - weighted feature scorer,
@@ -20,7 +26,7 @@ Use a conservative deterministic baseline that prioritizes:
 - rollout/search placeholder,
 - deterministic fallback.
 
-These are intentionally game-agnostic stubs for policy A/B comparison before DatsSol contract release.
+These remain game-agnostic stubs for policy A/B comparison around concrete DatsSol payloads.
 
 ## Why this baseline
 - Minimizes invalid action risk.
@@ -28,6 +34,7 @@ These are intentionally game-agnostic stubs for policy A/B comparison before Dat
 - Produces consistent traces for evaluation and regression testing.
 
 ## Immediate next refinements
-- wire DatsBlack legal action generation into generic candidate generator abstraction,
-- add scenario buckets for “missed tactical opportunity” once a trusted domain evaluator exists,
-- add per-policy holdout manifests for stability checks.
+- add richer DatsSol legal shortlist (build/repair/sabotage/beaver attack candidates),
+- account for output-plantation overload penalty in scorer,
+- add explicit HQ-relocation heuristic and meteo-aware scoring,
+- keep holdout manifests for policy stability checks.

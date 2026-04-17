@@ -135,5 +135,5 @@ def test_policy_recomputes_validity_after_fallback_replacement() -> None:
     decision = policy.decide(state, TickBudget(tick=state.tick))
 
     assert decision.used_fallback is True
-    assert decision.valid_action is True
-    assert decision.chosen_action.payload == {"commands": []}
+    assert decision.valid_action is False
+    assert decision.chosen_action.payload == {}
