@@ -1,0 +1,13 @@
+game: datsblack
+api_base_url: https://datsblack.datsteam.dev
+auth:
+  mode: header_token
+  header_name: X-API-Key
+  token: replace_me
+runtime:
+  timeout_seconds: 1.5
+  retries: 1
+  replay_dir: logs/replay
+datsblack:
+  mode: royal
+  enable_long_scan: true
