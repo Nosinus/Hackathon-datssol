@@ -1,7 +1,7 @@
 {
-  "timestamp": "2026-04-17T21:42:31.872873+00:00",
-  "turnNo": 271,
-  "nextTurnIn": 1.002,
+  "timestamp": "2026-04-17T21:42:39.856049+00:00",
+  "turnNo": 279,
+  "nextTurnIn": 1.011,
   "idle": false,
   "submit_attempted": true,
   "submit_skipped_reason": null,
@@ -36,8 +36,8 @@
     47
   ],
   "main_hp": 50,
-  "main_progress": 55,
-  "main_ttf": 5,
+  "main_progress": 95,
+  "main_ttf": 1,
   "plantation_count": 1,
   "isolated_count": 0,
   "critical_bridge_count": 0,
@@ -55,17 +55,21 @@
   "bridge_beaver_threats": [],
   "meteoForecasts": [
     {
+      "kind": "earthquake",
+      "turnsUntil": 5
+    },
+    {
       "kind": "sandstorm",
       "id": "257bd30d-efac-4d05-b9c7-68a98bddc558",
       "forming": false,
       "position": [
-        157,
-        221
+        165,
+        213
       ],
       "radius": 30,
       "nextPosition": [
-        158,
-        220
+        166,
+        212
       ]
     }
   ],
@@ -174,6 +178,6 @@
   ],
   "choice_margin": 0.43,
   "main_under_threat": false,
-  "latency_ms": 288,
+  "latency_ms": 279,
   "duplicate_turn_seen": false
 }
