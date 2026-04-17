@@ -10,14 +10,19 @@ Point = tuple[int, int]
 class GraphSummary:
     components: tuple[tuple[Point, ...], ...]
     articulation_points: tuple[Point, ...]
+    main_component: tuple[Point, ...]
     is_main_connected: bool
 
 
-def build_support_graph(nodes: list[Point], signal_range: int) -> dict[Point, set[Point]]:
+def is_orthogonally_adjacent(src: Point, dst: Point) -> bool:
+    return abs(src[0] - dst[0]) + abs(src[1] - dst[1]) == 1
+
+
+def build_support_graph(nodes: list[Point]) -> dict[Point, set[Point]]:
     graph: dict[Point, set[Point]] = defaultdict(set)
     for i, src in enumerate(nodes):
         for dst in nodes[i + 1 :]:
-            if in_square_range(src, dst, signal_range):
+            if is_orthogonally_adjacent(src, dst):
                 graph[src].add(dst)
                 graph[dst].add(src)
         graph.setdefault(src, set())
@@ -46,7 +51,6 @@ def connected_components(graph: dict[Point, set[Point]]) -> tuple[tuple[Point, .
 
 
 def articulation_points(graph: dict[Point, set[Point]]) -> tuple[Point, ...]:
-    # Simple O(V*(V+E)) brute-force for small visible sets.
     nodes = sorted(graph)
     if len(nodes) <= 2:
         return tuple()
@@ -54,7 +58,7 @@ def articulation_points(graph: dict[Point, set[Point]]) -> tuple[Point, ...]:
     critical: list[Point] = []
     for node in nodes:
         pruned = {k: {n for n in v if n != node} for k, v in graph.items() if k != node}
-        if len(pruned) == 0:
+        if not pruned:
             continue
         comps = len(connected_components(pruned))
         if comps > base_components:
@@ -66,20 +70,21 @@ def in_square_range(src: Point, dst: Point, rng: int) -> bool:
     return abs(src[0] - dst[0]) <= rng and abs(src[1] - dst[1]) <= rng
 
 
-def summarize_graph(
-    *, plantations: list[Point], main: Point | None, signal_range: int
-) -> GraphSummary:
-    graph = build_support_graph(plantations, signal_range)
+def summarize_graph(*, plantations: list[Point], main: Point | None) -> GraphSummary:
+    graph = build_support_graph(plantations)
     comps = connected_components(graph)
+    main_component: tuple[Point, ...] = tuple()
     main_connected = False
     if main is not None:
         for comp in comps:
             if main not in comp:
                 continue
+            main_component = comp
             main_connected = len(comp) == len(graph)
             break
     return GraphSummary(
         components=comps,
         articulation_points=articulation_points(graph),
+        main_component=main_component,
         is_main_connected=main_connected,
     )

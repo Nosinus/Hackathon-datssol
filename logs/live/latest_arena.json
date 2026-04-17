@@ -1,6 +1,6 @@
 {
-  "turnNo": 504,
-  "nextTurnIn": 1.014,
+  "turnNo": 510,
+  "nextTurnIn": 0.887,
   "size": [
     378,
     378
@@ -8,32 +8,27 @@
   "actionRange": 2,
   "plantations": [
     {
-      "id": "fabed6a5-7ad6-407a-91e4-bd1c9fc88143",
+      "id": "babfb785-73dd-4ee3-a187-ced4d5de6973",
       "position": [
-        110,
-        174
+        185,
+        358
       ],
       "isMain": true,
       "isIsolated": false,
-      "immunityUntilTurn": 493,
+      "immunityUntilTurn": 503,
       "hp": 50
     }
   ],
   "enemy": [],
-  "mountains": [
-    [
-      111,
-      172
-    ]
-  ],
+  "mountains": [],
   "cells": [
     {
       "position": [
-        110,
-        174
+        185,
+        358
       ],
-      "terraformationProgress": 70,
-      "turnsUntilDegradation": 46
+      "terraformationProgress": 50,
+      "turnsUntilDegradation": 50
     }
   ],
   "construction": [],
@@ -88,22 +83,15 @@
   },
   "meteoForecasts": [
     {
-      "kind": "earthquake",
-      "turnsUntil": 1
-    },
-    {
       "kind": "sandstorm",
-      "id": "3f3ddf1e-8793-46d1-ae9b-c55607211cc9",
-      "forming": false,
+      "turnsUntil": 2,
+      "id": "8807bc86-a30f-4e54-abe1-f46a5df08e0d",
+      "forming": true,
       "position": [
-        86,
-        292
+        143,
+        143
       ],
-      "radius": 30,
-      "nextPosition": [
-        85,
-        293
-      ]
+      "radius": 30
     }
   ]
 }

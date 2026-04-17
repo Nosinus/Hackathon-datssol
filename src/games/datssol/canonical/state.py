@@ -46,7 +46,16 @@ def to_canonical(arena: ArenaResponse) -> DatsSolCanonicalState:
             if len(item.position) == 2
         ],
         main=main_position,
-        signal_range=arena.signalRange or 3,
+    )
+    critical_bridges = [
+        point
+        for point in graph_summary.articulation_points
+        if point in graph_summary.main_component and point != main_position
+    ]
+    settlement_margin = _settlement_margin(
+        settlement_limit=arena.settlementLimit,
+        plantations_count=len(arena.plantations),
+        construction_count=len(arena.construction),
     )
 
     metadata: dict[str, object] = {
@@ -68,11 +77,16 @@ def to_canonical(arena: ArenaResponse) -> DatsSolCanonicalState:
         if arena.plantationUpgrades
         else None,
         "meteo_forecasts": [item.model_dump(exclude_none=True) for item in arena.meteoForecasts],
+        "main_component": [list(point) for point in graph_summary.main_component],
         "graph_components": [list(component) for component in graph_summary.components],
         "articulation_points": [list(p) for p in graph_summary.articulation_points],
+        "critical_bridges": [list(point) for point in critical_bridges],
+        "settlement_margin": settlement_margin,
         "risk_summary": {
             "main_connected": graph_summary.is_main_connected,
             "component_count": len(graph_summary.components),
+            "critical_bridge_count": len(critical_bridges),
+            "settlement_margin": settlement_margin,
         },
         "unknown_fields": sorted((arena.model_extra or {}).keys()),
     }
@@ -80,3 +94,14 @@ def to_canonical(arena: ArenaResponse) -> DatsSolCanonicalState:
     return DatsSolCanonicalState(
         state=CanonicalState(tick=arena.turnNo, me=me, enemies=enemies, metadata=metadata)
     )
+
+
+def _settlement_margin(
+    *,
+    settlement_limit: int | None,
+    plantations_count: int,
+    construction_count: int,
+) -> int | None:
+    if settlement_limit is None:
+        return None
+    return settlement_limit - plantations_count - construction_count

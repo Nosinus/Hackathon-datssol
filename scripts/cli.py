@@ -320,6 +320,34 @@ def _doctor_payload(settings: FullSettings) -> dict[str, object]:
     }
 
 
+def _point_from_raw(raw: object) -> tuple[int, int] | None:
+    if isinstance(raw, list) and len(raw) == 2 and all(isinstance(v, int) for v in raw):
+        return (raw[0], raw[1])
+    return None
+
+
+def _estimate_ttf(progress: object) -> int | None:
+    if not isinstance(progress, int):
+        return None
+    remaining = max(0, 100 - progress)
+    return max(0, (remaining + 9) // 10)
+
+
+def _beaver_threat(point: tuple[int, int] | None, beavers: object) -> int:
+    if point is None or not isinstance(beavers, list):
+        return 0
+    total = 0
+    for item in beavers:
+        if not isinstance(item, dict):
+            continue
+        pos = _point_from_raw(item.get("position"))
+        if pos is None:
+            continue
+        if abs(point[0] - pos[0]) <= 2 and abs(point[1] - pos[1]) <= 2:
+            total += 1
+    return total
+
+
 def _run_datssol_cycle(
     *,
     client: DatsSolClient,
@@ -345,10 +373,21 @@ def _run_datssol_cycle(
         "fallback_used": False,
         "main_position": None,
         "main_hp": None,
+        "main_progress": None,
+        "main_ttf": None,
+        "plantation_count": len(arena.plantations),
         "isolated_count": 0,
+        "critical_bridge_count": 0,
+        "construction_count": len(arena.construction),
+        "construction_progress": [],
+        "main_beaver_threat": 0,
+        "bridge_beaver_threats": [],
+        "meteoForecasts": state.metadata.get("meteo_forecasts", []),
+        "exit_usage": {},
     }
 
     plantations = state.metadata.get("plantations")
+    main_point: tuple[int, int] | None = None
     if isinstance(plantations, dict):
         isolated_count = 0
         for item in plantations.values():
@@ -359,7 +398,45 @@ def _run_datssol_cycle(
             if bool(item.get("is_main")):
                 summary["main_position"] = item.get("position")
                 summary["main_hp"] = item.get("hp")
+                main_point = _point_from_raw(item.get("position"))
         summary["isolated_count"] = isolated_count
+
+    cells = state.metadata.get("cells")
+    if isinstance(cells, list) and main_point is not None:
+        for item in cells:
+            if not isinstance(item, dict):
+                continue
+            pos = _point_from_raw(item.get("position"))
+            if pos != main_point:
+                continue
+            progress = item.get("terraformationProgress")
+            summary["main_progress"] = progress
+            summary["main_ttf"] = _estimate_ttf(progress)
+            break
+
+    critical_bridges = state.metadata.get("critical_bridges")
+    if isinstance(critical_bridges, list):
+        summary["critical_bridge_count"] = len(critical_bridges)
+        summary["bridge_beaver_threats"] = [
+            {
+                "position": point,
+                "beaver_threat": _beaver_threat(_point_from_raw(point), state.metadata.get("beavers")),
+            }
+            for point in critical_bridges
+        ]
+
+    construction = state.metadata.get("construction")
+    if isinstance(construction, list):
+        summary["construction_progress"] = [
+            {
+                "position": item.get("position"),
+                "progress": item.get("progress"),
+            }
+            for item in construction
+            if isinstance(item, dict)
+        ]
+
+    summary["main_beaver_threat"] = _beaver_threat(main_point, state.metadata.get("beavers"))
 
     if summary["idle"]:
         summary["submit_skipped_reason"] = "idle_arena"
@@ -369,6 +446,21 @@ def _run_datssol_cycle(
         cleaned = DatsSolActionValidator().sanitize(proposed, state)
         summary["action"] = cleaned.payload
         summary["fallback_used"] = "fallback_" in proposed.reason
+        exit_usage: dict[str, int] = {}
+        commands = cleaned.payload.get("command")
+        if isinstance(commands, list):
+            for item in commands:
+                if not isinstance(item, dict):
+                    continue
+                path = item.get("path")
+                if not isinstance(path, list) or len(path) < 2:
+                    continue
+                exit_point = path[1]
+                if not (isinstance(exit_point, list) and len(exit_point) == 2):
+                    continue
+                key = f"{exit_point[0]},{exit_point[1]}"
+                exit_usage[key] = exit_usage.get(key, 0) + 1
+        summary["exit_usage"] = exit_usage
 
         request = CommandRequest.model_validate(cleaned.payload)
         if not request.has_useful_action():
