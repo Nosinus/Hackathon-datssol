@@ -22,6 +22,8 @@ class ReplaySummary:
     latency_avg_ms: float | None
     latency_p50_ms: int | None
     latency_p95_ms: int | None
+    run_ids: list[str]
+    policy_ids: list[str]
 
     def as_dict(self) -> dict[str, object]:
         return {
@@ -37,6 +39,8 @@ class ReplaySummary:
             "latency_avg_ms": self.latency_avg_ms,
             "latency_p50_ms": self.latency_p50_ms,
             "latency_p95_ms": self.latency_p95_ms,
+            "run_ids": self.run_ids,
+            "policy_ids": self.policy_ids,
         }
 
 
@@ -72,6 +76,7 @@ def _to_envelope(payload: dict[str, Any]) -> ReplayTickEnvelope:
             fallback_flags=dict(payload.get("fallback_flags", {})),
             validation_flags=dict(payload.get("validation_flags", {})),
             parser_extras=dict(payload.get("parser_extras", {})),
+            run_metadata=dict(payload.get("run_metadata", {})),
         )
     return upgrade_legacy_record(payload)
 
@@ -93,6 +98,8 @@ def summarize_replay_dir(replay_dir: Path) -> ReplaySummary:
     dropped_or_invalid = 0
     transport_error_count = 0
     latencies: list[int] = []
+    run_ids: set[str] = set()
+    policy_ids: set[str] = set()
 
     files = sorted(replay_dir.glob("tick_*.json"))
     for path in files:
@@ -125,6 +132,12 @@ def summarize_replay_dir(replay_dir: Path) -> ReplaySummary:
 
         if isinstance(envelope.latency_ms, int):
             latencies.append(envelope.latency_ms)
+        run_id = envelope.run_metadata.get("run_id")
+        if isinstance(run_id, str) and run_id:
+            run_ids.add(run_id)
+        policy_id = envelope.run_metadata.get("policy_id")
+        if isinstance(policy_id, str) and policy_id:
+            policy_ids.add(policy_id)
 
     avg = (sum(latencies) / len(latencies)) if latencies else None
 
@@ -141,4 +154,6 @@ def summarize_replay_dir(replay_dir: Path) -> ReplaySummary:
         latency_avg_ms=avg,
         latency_p50_ms=_percentile(latencies, 0.5),
         latency_p95_ms=_percentile(latencies, 0.95),
+        run_ids=sorted(run_ids),
+        policy_ids=sorted(policy_ids),
     )

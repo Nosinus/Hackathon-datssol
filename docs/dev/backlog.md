@@ -1,19 +1,15 @@
 # Backlog
 
-## P0 (next)
-- Wire DatsBlack legality generator into generic offline-lab candidate interface.
-- Expand scenario fixture library with adversarial edge cases and parser anomaly records.
-- Add p99 latency and per-endpoint histogram rollups to replay summary (p50/p95 already implemented).
-- Add optional manifest bucketing by map/mode/observability tags.
+## P0
+- Подключить policy disagreement signal в replay parser extras из реальных тренировочных данных.
+- Добавить regression fixtures для anomaly/export контуров replay analytics.
+- Добавить p99 latency и histogram buckets в replay summary/analytics.
 
 ## P1
-- Add CI step for `scripts/check_contract_consistency.py` and OpenAPI diff gating.
-- Integrate static map geometry helpers into offline tactical opportunity labeling.
-- Add transport circuit-breaker style guard when repeated 5xx/timeouts occur.
-- Generate/update typed models from OpenAPI snapshot script.
+- Улучшить benchmark contour: optional per-endpoint scenario profile (scan/command/register).
+- Добавить CLI команду для пакетного сравнения N запусков по mode/environment.
+- Расширить training playbook чеклистами для night/finals handoff.
 
 ## P2
-- Implement concrete `games/datssol` adapter after official release docs.
-- Revisit auth/header abstraction once DatsSol auth contract is known.
-- Add policy/compliance guardrails based on official live-round rules.
-- Replace rollout placeholder with domain-validated bounded search once forward model exists.
+- Импортировать официальный DatsSol OpenAPI и реализовать concrete adapter после релиза.
+- Добавить datssol-specific legal generator в offline lab без нарушения generic boundary.

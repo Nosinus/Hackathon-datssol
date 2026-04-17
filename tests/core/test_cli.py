@@ -81,5 +81,31 @@ def test_cli_loop_dry_run_uses_fixture_and_send_margin(monkeypatch, tmp_path: Pa
     rc = cli.main()
     out = capsys.readouterr().out
     assert rc == 0
-    assert json.loads(out)[0]["success"] is True
+    payload = json.loads(out)
+    assert payload["results"][0]["success"] is True
+    assert payload["manifest"]["policy_id"] == "safe_baseline"
     assert captured["send_margin_ms"] == 77
+
+
+def test_cli_ops_create_manifest(monkeypatch, tmp_path: Path, capsys) -> None:
+    monkeypatch.setattr(
+        "sys.argv",
+        [
+            "cli",
+            "ops",
+            "create-manifest",
+            "--output",
+            str(tmp_path / "run.json"),
+            "--policy-id",
+            "p1",
+            "--mode",
+            "training",
+            "--environment",
+            "local",
+        ],
+    )
+    rc = cli.main()
+    out = json.loads(capsys.readouterr().out)
+    assert rc == 0
+    assert out["policy_id"] == "p1"
+    assert (tmp_path / "run.json").exists()
