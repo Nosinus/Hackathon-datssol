@@ -1,6 +1,6 @@
 {
-  "turnNo": 254,
-  "nextTurnIn": 0.998,
+  "turnNo": 262,
+  "nextTurnIn": 0.96,
   "size": [
     378,
     378
@@ -8,39 +8,43 @@
   "actionRange": 2,
   "plantations": [
     {
-      "id": "172f7807-5e9f-44a0-a164-8c403fad97ae",
+      "id": "12304186-b4dc-4f9b-ac74-86b810569873",
       "position": [
-        87,
-        52
+        77,
+        47
       ],
       "isMain": true,
       "isIsolated": false,
-      "immunityUntilTurn": 243,
-      "hp": 40
+      "immunityUntilTurn": 263,
+      "hp": 50
     }
   ],
   "enemy": [],
   "mountains": [
     [
-      90,
-      51
+      80,
+      45
+    ],
+    [
+      74,
+      47
     ]
   ],
   "cells": [
     {
       "position": [
-        87,
-        52
+        77,
+        47
       ],
-      "terraformationProgress": 70,
-      "turnsUntilDegradation": 46
+      "terraformationProgress": 10,
+      "turnsUntilDegradation": 58
     }
   ],
   "construction": [
     {
       "position": [
-        88,
-        52
+        78,
+        47
       ],
       "progress": 5
     }
@@ -49,7 +53,7 @@
   "plantationUpgrades": {
     "points": 8,
     "intervalTurns": 30,
-    "turnsUntilPoints": 16,
+    "turnsUntilPoints": 8,
     "maxPoints": 15,
     "tiers": [
       {
@@ -100,13 +104,13 @@
       "id": "257bd30d-efac-4d05-b9c7-68a98bddc558",
       "forming": false,
       "position": [
-        140,
-        238
+        148,
+        230
       ],
       "radius": 30,
       "nextPosition": [
-        141,
-        237
+        149,
+        229
       ]
     }
   ]
