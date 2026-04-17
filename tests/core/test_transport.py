@@ -31,8 +31,9 @@ class _FakeClient:
         *,
         headers: dict[str, str],
         json: dict[str, object] | None,
+        timeout: float | None = None,
     ) -> httpx.Response:
-        _ = (method, path, headers, json)
+        _ = (method, path, headers, json, timeout)
         return self._response
 
 
@@ -50,8 +51,9 @@ class _NetworkErrorClient:
         *,
         headers: dict[str, str],
         json: dict[str, object] | None,
+        timeout: float | None = None,
     ) -> httpx.Response:
-        _ = (method, path, headers, json)
+        _ = (method, path, headers, json, timeout)
         raise httpx.ConnectError("boom")
 
 
@@ -110,3 +112,25 @@ def test_transport_captures_request_metadata(monkeypatch: pytest.MonkeyPatch) ->
     assert transport.last_request_meta.path == "/api/scan"
     assert transport.last_request_meta.status_code == 200
     assert transport.last_request_meta.trace_id == "abc"
+
+
+def test_transport_reuses_single_client(monkeypatch: pytest.MonkeyPatch) -> None:
+    request = httpx.Request("GET", "https://example.test/api/scan")
+    response = httpx.Response(
+        200,
+        json={"scan": {"myShips": [], "enemyShips": [], "zone": None, "tick": 1}, "success": True},
+        request=request,
+    )
+    calls = {"count": 0}
+
+    def _factory(*args: Any, **kwargs: Any) -> _FakeClient:
+        _ = (args, kwargs)
+        calls["count"] += 1
+        return _FakeClient(response)
+
+    monkeypatch.setattr("datsteam_core.transport.http.httpx.Client", _factory)
+    transport = HttpTransport(base_url="https://example.test", default_headers={})
+    transport.get_validated("/api/scan", ScanResponse)
+    transport.get_validated("/api/scan", ScanResponse)
+
+    assert calls["count"] == 1

@@ -4,6 +4,7 @@
 - Подключить policy disagreement signal в replay parser extras из реальных тренировочных данных.
 - Добавить regression fixtures для anomaly/export контуров replay analytics.
 - Добавить p99 latency и histogram buckets в replay summary/analytics.
+- Добавить CI-проверку, что `docs/input/datssol_imports/` содержит manifest после release-hour импорта.
 
 ## P1
 - Улучшить benchmark contour: optional per-endpoint scenario profile (scan/command/register).

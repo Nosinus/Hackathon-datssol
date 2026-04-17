@@ -5,7 +5,9 @@
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -e .[dev]
+cp .env.example .env
 ```
+`load_from_env()` автоматически подхватит `.env`; вручную экспортированные переменные имеют приоритет.
 
 ## 2) Baseline checks
 ```bash
@@ -53,3 +55,4 @@ docker compose up --build datsteam-agent
 ```bash
 python -m scripts.prepare_datssol_import --tag 20260417T180000Z
 ```
+См. пошаговый чеклист: `docs/dev/release_hour_import.md`.

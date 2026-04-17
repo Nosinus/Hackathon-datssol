@@ -22,15 +22,15 @@ Use these files to bootstrap a repository that is:
 7. `docs/input/research_memo_highlights.md` — condensed guidance from the research memo.
 8. `docs/input/questions_for_datsol_release.md` — what is still missing and must stay isolated behind interfaces.
 9. Raw source files only if needed:
-   - `datsblack_openapi.json`
-   - `Геймтон DatsBlack .docx`
-   - `doc.pdf`
-   - `Исследование стратегии участия в HTTP_JSON-соревновании агентов.docx`
+   - `docs/input/datsblack_openapi.json`
+   - `docs/input/archive/binaries/Геймтон DatsBlack .docx`
+   - `docs/input/archive/binaries/doc.pdf`
+   - `docs/input/archive/binaries/Исследование стратегии участия в HTTP_JSON-соревновании агентов.docx`
 
 ## How Codex should interpret the sources
 
 ### Source priority
-1. `datsblack_openapi.json` is the **wire-contract source of truth** for DatsBlack request/response shapes.
+1. `docs/input/datsblack_openapi.json` is the **wire-contract source of truth** for DatsBlack request/response shapes.
 2. The markdown files in this pack are the **fastest human-curated summaries**.
 3. The raw DOCX/PDF files are **reference backups**, not the first thing to parse.
 4. Public DatsSol event information is **metadata only**, not a mechanics contract.

@@ -3,10 +3,18 @@ __pycache__/
 .mypy_cache/
 .pytest_cache/
 .ruff_cache/
+.venv/
+.env
 
 # Keep raw binaries only in original source drop folder
 /docs/input/*.pdf
 /docs/input/*.docx
+logs/replay/*.json
+logs/maps/
 logs/analytics/
+logs/offline/
+logs/tmp/
+artifacts/
+tmp/
 ops/manifests/*.json
 src/datsteam_agent_starter.egg-info/

@@ -8,6 +8,7 @@ Use a release tag (UTC), e.g. `20260417T180000Z`:
 - `{tag}_event_notes.md`
 - `{tag}_openapi.json`
 - `{tag}_examples.json`
+- `{tag}_extra_notes.md`
 - `{tag}_import_checklist.json` (generated helper)
 
 ## Helper
@@ -24,3 +25,4 @@ python -m scripts.prepare_datssol_import --tag 20260417T180000Z
 6. Run smoke checks (`pytest`, `ruff`, `mypy`, fixture run).
 
 This prep does **not** implement DatsSol mechanics before official release.
+Дополнительный handoff-чеклист: `docs/dev/release_hour_import.md`.

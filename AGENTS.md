@@ -21,7 +21,7 @@ If a markdown summary exists, prefer it over parsing the DOCX/PDF first.
 ## Canonical input locations
 
 - `docs/input/` is the canonical text-first folder (markdown + active OpenAPI snapshots).
-- `Docs/Input/` is a legacy binary archive folder (DOCX/PDF backups).
+- `docs/input/archive/binaries/` is a legacy binary archive folder (DOCX/PDF backups).
 
 ## Repository mission
 
@@ -39,7 +39,7 @@ The point is to wake up with a repository that is runnable, testable, and easy t
 
 1. `docs/input/datsblack_openapi.json` for DatsBlack wire-contract truth
 2. curated markdown files in `docs/input/`
-3. raw source binaries in `Docs/Input/`
+3. raw source binaries in `docs/input/archive/binaries/`
 4. generic assumptions only after the above
 
 Treat:
