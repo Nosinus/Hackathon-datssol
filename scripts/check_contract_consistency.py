@@ -29,11 +29,9 @@ def _assert_paths_exist() -> list[str]:
 
 def _assert_docs_input_is_canonical() -> list[str]:
     errors: list[str] = []
-    docs_input = ROOT / "Docs" / "Input"
-    for path in docs_input.glob("*.md"):
-        if path.name == "README.md":
-            continue
-        errors.append(f"legacy markdown found in Docs/Input (move to docs/input): {path.name}")
+    legacy_docs = ROOT / "Docs"
+    if legacy_docs.exists():
+        errors.append("legacy Docs/ directory exists (consolidate into lowercase docs/)")
     return errors
 
 

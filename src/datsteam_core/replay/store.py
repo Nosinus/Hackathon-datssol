@@ -66,6 +66,7 @@ class ReplayWriter:
             validation_flags=validation_flags,
             parser_extras=parser_extras,
             run_metadata=self.run_metadata,
+            written_at_utc=ts,
         )
         path.write_text(
             json.dumps(envelope.to_dict(), ensure_ascii=False, indent=2), encoding="utf-8"

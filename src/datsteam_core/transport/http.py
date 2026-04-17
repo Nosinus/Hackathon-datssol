@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 import time
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any
 from uuid import uuid4
 
@@ -83,6 +83,17 @@ class HttpTransport:
     default_send_margin_ms: int = 50
 
     last_request_meta: RequestMeta | None = None
+    _client: httpx.Client | None = field(default=None, init=False, repr=False)
+
+    def _get_client(self) -> httpx.Client:
+        if self._client is None:
+            self._client = httpx.Client(base_url=self.base_url, timeout=self.timeout_seconds)
+        return self._client
+
+    def close(self) -> None:
+        if self._client is not None:
+            self._client.close()
+            self._client = None
 
     def _request(
         self,
@@ -107,10 +118,13 @@ class HttpTransport:
         for attempt in range(1, max_attempts + 1):
             start = time.perf_counter()
             try:
-                with httpx.Client(
-                    base_url=self.base_url, timeout=timeout_seconds or self.timeout_seconds
-                ) as client:
-                    response = client.request(method, path, headers=request_headers, json=body)
+                response = self._get_client().request(
+                    method,
+                    path,
+                    headers=request_headers,
+                    json=body,
+                    timeout=timeout_seconds or self.timeout_seconds,
+                )
                 latency_ms = int((time.perf_counter() - start) * 1000)
                 self.last_request_meta = RequestMeta(
                     method=method,

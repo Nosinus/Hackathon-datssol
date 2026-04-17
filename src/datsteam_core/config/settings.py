@@ -55,7 +55,24 @@ def _env_bool(name: str, default: bool) -> bool:
     return value.lower() in {"1", "true", "yes", "on"}
 
 
-def load_from_env() -> FullSettings:
+def _load_dotenv(path: Path) -> None:
+    if not path.exists():
+        return
+    for raw_line in path.read_text(encoding="utf-8").splitlines():
+        line = raw_line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        key, value = line.split("=", 1)
+        name = key.strip()
+        if not name:
+            continue
+        normalized = value.strip().strip("'").strip('"')
+        os.environ.setdefault(name, normalized)
+
+
+def load_from_env(*, env_file: str | Path | None = ".env") -> FullSettings:
+    if env_file is not None:
+        _load_dotenv(Path(env_file))
     app = AppSettings(
         game=os.getenv("DATASTEAM_GAME", "datsblack"),
         api_base_url=os.getenv("DATASTEAM_API_BASE_URL", "https://datsblack.datsteam.dev"),

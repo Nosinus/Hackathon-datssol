@@ -30,6 +30,8 @@ def test_replay_writer_creates_file(tmp_path) -> None:
     assert payload["strategy_id"] == "baseline"
     assert payload["state_hash"]
     assert payload["run_metadata"]["run_id"] == "run-1"
+    assert payload["written_at_utc"] is not None
+    assert payload["result_success"] is True
 
 
 def test_replay_writer_uses_unique_paths_per_write(tmp_path) -> None:

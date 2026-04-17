@@ -24,6 +24,7 @@ make lint
 make typecheck
 make test
 ```
+`load_from_env()` автоматически читает `.env` (если файл есть) и не перезаписывает уже экспортированные переменные окружения.
 
 ## Deployment contour
 ```bash
@@ -70,7 +71,7 @@ CLI печатает `connect/read/total` усреднения и `recommended_s
 ```bash
 python -m scripts.prepare_datssol_import --tag 20260417T180000Z
 ```
-См. `docs/operations/datssol_import_prep.md`.
+См. `docs/dev/release_hour_import.md`.
 
 ## Важные ограничения
 - не выдумываем DatsSol endpoints/schema/scoring/mechanics,

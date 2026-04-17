@@ -1,8 +1,9 @@
 from __future__ import annotations
 
+import os
 from pathlib import Path
 
-from datsteam_core.config.settings import load_from_yaml
+from datsteam_core.config.settings import load_from_env, load_from_yaml
 
 
 def test_load_from_yaml(tmp_path: Path) -> None:
@@ -36,3 +37,33 @@ datsblack:
     assert settings.app.runtime.backoff_multiplier == 1.5
     assert settings.app.runtime.accept_gzip is False
     assert settings.app.runtime.send_margin_ms == 40
+
+
+def test_load_from_env_uses_environment(monkeypatch) -> None:
+    monkeypatch.setenv("DATASTEAM_API_BASE_URL", "https://env.example.test")
+    monkeypatch.setenv("DATASTEAM_API_KEY", "env-token")
+    monkeypatch.setenv("DATASTEAM_RETRIES", "3")
+    settings = load_from_env(env_file=None)
+
+    assert settings.app.api_base_url == "https://env.example.test"
+    assert settings.app.auth.token == "env-token"
+    assert settings.app.runtime.retries == 3
+
+
+def test_load_from_env_reads_dotenv_file(tmp_path: Path, monkeypatch) -> None:
+    dotenv = tmp_path / ".env"
+    dotenv.write_text(
+        "DATASTEAM_API_BASE_URL=https://dotenv.example.test\nDATASTEAM_API_KEY=dotenv-token\n",
+        encoding="utf-8",
+    )
+    monkeypatch.delenv("DATASTEAM_API_BASE_URL", raising=False)
+    monkeypatch.delenv("DATASTEAM_API_KEY", raising=False)
+    previous_cwd = Path.cwd()
+    os.chdir(tmp_path)
+    try:
+        settings = load_from_env()
+    finally:
+        os.chdir(previous_cwd)
+
+    assert settings.app.api_base_url == "https://dotenv.example.test"
+    assert settings.app.auth.token == "dotenv-token"
