@@ -1,9 +1,13 @@
-# Docs/Input (legacy binary archive)
+# docs/input
 
-This folder stores raw source binaries referenced by the text-first materials in `docs/input/`.
+Canonical **text-first** input folder for this repository.
 
-Scope:
-- `.docx` and `.pdf` backups only
+Use this directory for:
+- curated markdown context files,
+- machine-readable contract snapshots (for example `datsblack_openapi.json`),
+- future DatsSol official contract files once released.
 
-Do not place canonical markdown summaries or active OpenAPI snapshots here.
-Use `docs/input/` for current text and contract source-of-truth files.
+## Binary artifacts
+
+Raw binary backups (`.pdf`, `.docx`) are stored in `Docs/Input/` as an archive.
+That folder is not the canonical location for markdown summaries or active contract snapshots.
