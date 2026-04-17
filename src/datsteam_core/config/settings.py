@@ -24,6 +24,7 @@ class RuntimeSettings:
     backoff_multiplier: float
     backoff_max_seconds: float
     accept_gzip: bool
+    send_margin_ms: int
 
 
 @dataclass(frozen=True)
@@ -71,6 +72,7 @@ def load_from_env() -> FullSettings:
             backoff_multiplier=float(os.getenv("DATASTEAM_BACKOFF_MULTIPLIER", "2.0")),
             backoff_max_seconds=float(os.getenv("DATASTEAM_BACKOFF_MAX_SECONDS", "2.0")),
             accept_gzip=_env_bool("DATASTEAM_ACCEPT_GZIP", True),
+            send_margin_ms=int(os.getenv("DATASTEAM_SEND_MARGIN_MS", "50")),
         ),
     )
     datsblack = DatsBlackSettings(
@@ -103,6 +105,7 @@ def load_from_yaml(path: str | Path) -> FullSettings:
             backoff_multiplier=float(runtime.get("backoff_multiplier", 2.0)),
             backoff_max_seconds=float(runtime.get("backoff_max_seconds", 2.0)),
             accept_gzip=bool(runtime.get("accept_gzip", True)),
+            send_margin_ms=int(runtime.get("send_margin_ms", 50)),
         ),
     )
     dcfg: dict[str, Any] = data.get("datsblack", {})

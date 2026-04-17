@@ -88,12 +88,19 @@ make summarize-replay
 python -m scripts.summarize_replay logs/replay
 ```
 
-### Live DatsBlack harness
+### Live CLI entrypoints
+```bash
+python -m scripts.cli fixture-run
+python -m scripts.cli datsblack scan
+python -m scripts.cli datsblack map
+python -m scripts.cli datsblack register --mode royal
+python -m scripts.cli datsblack loop --ticks 3 --dry-run
+python -m scripts.cli datsblack dry-run
+```
+
+Legacy direct harness remains available:
 ```bash
 python -m games.datsblack.live --dry-run --ticks 3
-python -m games.datsblack.live --scan-only
-python -m games.datsblack.live --register --mode royal --map-cache
-python -m games.datsblack.live --register --mode deathmatch --ticks 5 --exit-battle
 ```
 
 ## Safe next step after DatsSol docs drop

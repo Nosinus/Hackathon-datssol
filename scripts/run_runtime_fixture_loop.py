@@ -34,16 +34,23 @@ class EchoActionSink(ActionSink):
         return {"success": True, "echo": action.payload}
 
 
-def main() -> None:
-    provider = FixtureStateProvider(Path("tests/fixtures/datsblack_scan_multi_tick.json"))
+def main(
+    fixture_path: Path | None = None,
+    *,
+    ticks: int = 3,
+    replay_dir: Path = Path("logs/replay"),
+) -> None:
+    provider = FixtureStateProvider(
+        fixture_path or Path("tests/fixtures/datsblack_scan_multi_tick.json")
+    )
     loop = RuntimeLoop(
         state_provider=provider,
         strategy=SafeBaselineStrategy(),
         action_validator=DatsBlackActionValidator(),
         action_sink=EchoActionSink(),
-        replay_writer=ReplayWriter(Path("logs/replay")),
+        replay_writer=ReplayWriter(replay_dir),
     )
-    for _ in range(3):
+    for _ in range(ticks):
         print(loop.step())
 
 

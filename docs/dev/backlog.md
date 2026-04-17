@@ -3,7 +3,7 @@
 ## P0 (next)
 - Wire DatsBlack legality generator into generic offline-lab candidate interface.
 - Expand scenario fixture library with adversarial edge cases and parser anomaly records.
-- Add per-endpoint latency histogram export (p50/p95/p99) from live runs.
+- Add p99 latency and per-endpoint histogram rollups to replay summary (p50/p95 already implemented).
 - Add optional manifest bucketing by map/mode/observability tags.
 
 ## P1

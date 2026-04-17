@@ -4,6 +4,7 @@ import json
 import time
 from dataclasses import dataclass
 from typing import Any
+from uuid import uuid4
 
 import httpx
 from pydantic import BaseModel, ValidationError
@@ -21,6 +22,10 @@ class TransportError(RuntimeError):
 
 class TransportTimeoutError(TransportError):
     """Timeout while calling remote endpoint."""
+
+
+class TransportNetworkError(TransportError):
+    """Network/connectivity error while calling remote endpoint."""
 
 
 class TransportHttpStatusError(TransportError):
@@ -45,12 +50,27 @@ class TransportSchemaError(TransportError):
     """Response JSON did not match model schema."""
 
 
+class TransportJsonDecodeError(TransportError):
+    """Response body is not valid JSON object."""
+
+
 @dataclass(frozen=True)
 class RetryPolicy:
     retries: int = 1
     backoff_initial_seconds: float = 0.2
     backoff_multiplier: float = 2.0
     backoff_max_seconds: float = 2.0
+
+
+@dataclass(frozen=True)
+class RequestMeta:
+    method: str
+    path: str
+    latency_ms: int
+    attempt: int
+    status_code: int | None
+    request_id: str
+    trace_id: str | None
 
 
 @dataclass
@@ -60,6 +80,9 @@ class HttpTransport:
     timeout_seconds: float = 1.5
     retry_policy: RetryPolicy = RetryPolicy()
     accept_gzip: bool = True
+    default_send_margin_ms: int = 50
+
+    last_request_meta: RequestMeta | None = None
 
     def _request(
         self,
@@ -68,19 +91,36 @@ class HttpTransport:
         body: dict[str, object] | None = None,
         *,
         retryable: bool,
+        timeout_seconds: float | None = None,
     ) -> dict[str, Any]:
         request_headers = dict(self.default_headers)
         if self.accept_gzip:
             request_headers["Accept-Encoding"] = "gzip"
+
+        request_id = request_headers.get("X-Request-Id") or uuid4().hex
+        request_headers["X-Request-Id"] = request_id
 
         backoff = self.retry_policy.backoff_initial_seconds
         max_attempts = self.retry_policy.retries + 1 if retryable else 1
         last_error: TransportError | None = None
 
         for attempt in range(1, max_attempts + 1):
+            start = time.perf_counter()
             try:
-                with httpx.Client(base_url=self.base_url, timeout=self.timeout_seconds) as client:
+                with httpx.Client(
+                    base_url=self.base_url, timeout=timeout_seconds or self.timeout_seconds
+                ) as client:
                     response = client.request(method, path, headers=request_headers, json=body)
+                latency_ms = int((time.perf_counter() - start) * 1000)
+                self.last_request_meta = RequestMeta(
+                    method=method,
+                    path=path,
+                    latency_ms=latency_ms,
+                    attempt=attempt,
+                    status_code=response.status_code,
+                    request_id=request_id,
+                    trace_id=response.headers.get("X-Trace-Id") or response.headers.get("Trace-Id"),
+                )
 
                 if response.status_code >= 500 and retryable and attempt < max_attempts:
                     time.sleep(backoff)
@@ -100,11 +140,20 @@ class HttpTransport:
                         response_text=response.text[:300],
                     )
 
-                payload = self._parse_json_object(response)
+                payload = self._parse_json_object(
+                    response, method=method, path=path, attempt=attempt
+                )
                 return payload
             except httpx.TimeoutException:
                 last_error = TransportTimeoutError(
                     f"Timeout for {method} {path}",
+                    method=method,
+                    path=path,
+                    attempt=attempt,
+                )
+            except httpx.NetworkError as exc:
+                last_error = TransportNetworkError(
+                    f"Network error for {method} {path}: {exc}",
                     method=method,
                     path=path,
                     attempt=attempt,
@@ -137,30 +186,38 @@ class HttpTransport:
 
         raise RuntimeError("unreachable")
 
-    def _parse_json_object(self, response: httpx.Response) -> dict[str, Any]:
+    def _parse_json_object(
+        self, response: httpx.Response, *, method: str, path: str, attempt: int
+    ) -> dict[str, Any]:
         content = response.content
 
         try:
             payload = json.loads(content)
         except json.JSONDecodeError as exc:
-            raise TransportError(
+            raise TransportJsonDecodeError(
                 "Response body is not valid JSON",
-                method=response.request.method,
-                path=response.request.url.path,
-                attempt=1,
+                method=method,
+                path=path,
+                attempt=attempt,
             ) from exc
 
         if not isinstance(payload, dict):
-            raise TransportError(
+            raise TransportJsonDecodeError(
                 "JSON payload must be object",
-                method=response.request.method,
-                path=response.request.url.path,
-                attempt=1,
+                method=method,
+                path=path,
+                attempt=attempt,
             )
         return payload
 
-    def get_validated(self, path: str, model: type[BaseModel]) -> BaseModel:
-        raw = self._request("GET", path, retryable=True)
+    def get_validated(
+        self,
+        path: str,
+        model: type[BaseModel],
+        *,
+        timeout_seconds: float | None = None,
+    ) -> BaseModel:
+        raw = self._request("GET", path, retryable=True, timeout_seconds=timeout_seconds)
         try:
             return model.model_validate(raw)
         except ValidationError as exc:
@@ -178,8 +235,15 @@ class HttpTransport:
         model: type[BaseModel],
         *,
         retryable: bool = False,
+        timeout_seconds: float | None = None,
     ) -> BaseModel:
-        raw = self._request("POST", path, body=body, retryable=retryable)
+        raw = self._request(
+            "POST",
+            path,
+            body=body,
+            retryable=retryable,
+            timeout_seconds=timeout_seconds,
+        )
         try:
             return model.model_validate(raw)
         except ValidationError as exc:

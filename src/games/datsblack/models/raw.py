@@ -60,6 +60,9 @@ class Scan(BaseModel):
     enemyShips: list[EnemyShip]
     zone: Zone | None = None
     tick: int
+    tickRemainMs: int | None = None
+    tick_remain_ms: int | None = None
+    remaining_budget_ms: int | None = None
 
 
 class ScanResponse(BaseModel):
