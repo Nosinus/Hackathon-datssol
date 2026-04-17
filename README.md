@@ -40,3 +40,9 @@ python -m scripts.cli datssol logs
 ```bash
 python -m scripts.cli datssol command --from-file payload.json
 ```
+
+## DatsSol Stage-1 runtime notes
+
+- Added concrete Stage-1 modules for graph, legal action generation, scheduler, semantic validator, and safe baseline policy.
+- Live CLI now supports `--poll-only`, `--logs`, `--dry-run-submit`, `--once`, and sample recording.
+- Unknowns remain in live server behavior (rate limits and duplicate-submit handling under load).

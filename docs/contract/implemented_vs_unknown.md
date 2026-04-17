@@ -28,3 +28,9 @@
 - speculative deep search / MCTS for DatsSol v1
 - external LLM calls in live action path
 - hardcoded token or environment secrets
+
+### Stage-1 additions
+
+- datssol graph/connectivity summary and articulation risk extraction are implemented.
+- datssol semantic validator rejects empty payloads and range-invalid paths.
+- datssol exit scheduler penalizes repeated exit usage within shortlist scheduling.

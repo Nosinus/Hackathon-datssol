@@ -13,7 +13,7 @@ def test_live_module_dry_run_entrypoint() -> None:
             sys.executable,
             "-m",
             "games.datssol.live",
-            "--dry-run",
+            "--dry-run-submit",
             "--ticks",
             "1",
             "--fixture",

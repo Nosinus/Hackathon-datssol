@@ -38,3 +38,10 @@ These remain game-agnostic stubs for policy A/B comparison around concrete DatsS
 - account for output-plantation overload penalty in scorer,
 - add explicit HQ-relocation heuristic and meteo-aware scoring,
 - keep holdout manifests for policy stability checks.
+
+## Stage-1 baseline additions
+
+- shortlist from legal candidates
+- exit-congestion-aware scheduling
+- lightweight local predictor penalty (1-3 tick proxy)
+- semantic validation gate before submit

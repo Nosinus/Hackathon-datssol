@@ -20,3 +20,8 @@ python -m pytest -q
 python -m ruff check src tests scripts
 python -m mypy src
 ```
+
+## Stage-1 operator reminder
+
+- Do not auto-retry `POST /api/command` in the same turn.
+- Treat `code == 0` with non-empty `errors[]` as semantically non-clean and flag for review.

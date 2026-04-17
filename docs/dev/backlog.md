@@ -12,5 +12,5 @@
 - Расширить training playbook чеклистами для night/finals handoff.
 
 ## P2
-- Импортировать официальный DatsSol OpenAPI и реализовать concrete adapter после релиза.
+- [done] Импортирован DatsSol v1 контракт и реализован concrete adapter Stage-1 (клиент/canonical/validator/live).
 - Добавить datssol-specific legal generator в offline lab без нарушения generic boundary.

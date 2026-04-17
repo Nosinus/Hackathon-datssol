@@ -48,3 +48,10 @@ unknown:
   - live_rate_limits_and_throttling
   - exact_logs_payload_shape_when_non_registered_in_all_envs
   - command_retry_idempotency_rules
+stage1_checkpoint:
+  date: 2026-04-17
+  datssol_runtime: concrete
+  semantic_success_rule: "code == 0 and errors is empty"
+  remaining_unknowns:
+    - duplicate submit edge cases under live load
+    - production rate limits / retry policy nuances
