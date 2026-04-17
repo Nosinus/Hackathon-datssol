@@ -34,11 +34,17 @@ class DatsSolBaselineStrategy:
                     mountains.add((int(item[0]), int(item[1])))
         settlement_limit = _safe_int(state.metadata.get("settlement_limit"), default=30)
         near_cap = len(state.me) >= settlement_limit
+        map_bounds = _parse_map_bounds(state.metadata.get("map_size"))
 
         commands: list[dict[str, object]] = []
         for author in non_isolated:
             origin = _pos(plantations, author.id)
-            target = self._pick_build_target(origin, my_positions, mountains)
+            target = self._pick_build_target(
+                origin,
+                my_positions,
+                mountains,
+                map_bounds=map_bounds,
+            )
             if target is None:
                 continue
             commands.append({"path": [list(origin), list(origin), list(target)]})
@@ -67,6 +73,8 @@ class DatsSolBaselineStrategy:
         origin: tuple[int, int],
         occupied: set[tuple[int, int]],
         mountains: set[tuple[int, int]],
+        *,
+        map_bounds: tuple[int, int] | None,
     ) -> tuple[int, int] | None:
         ox, oy = origin
         candidates: list[tuple[float, tuple[int, int]]] = []
@@ -75,6 +83,8 @@ class DatsSolBaselineStrategy:
                 if dx == 0 and dy == 0:
                     continue
                 target = (ox + dx, oy + dy)
+                if map_bounds is not None and not _in_bounds(target, map_bounds):
+                    continue
                 if target in occupied or target in mountains:
                     continue
                 score = 1.0
@@ -112,6 +122,23 @@ def _safe_int(value: object, *, default: int) -> int:
     if isinstance(value, int):
         return value
     return default
+
+
+def _parse_map_bounds(raw: object) -> tuple[int, int] | None:
+    if not isinstance(raw, list) or len(raw) != 2:
+        return None
+    width, height = raw
+    if not isinstance(width, int) or not isinstance(height, int):
+        return None
+    if width <= 0 or height <= 0:
+        return None
+    return (width, height)
+
+
+def _in_bounds(position: tuple[int, int], bounds: tuple[int, int]) -> bool:
+    x, y = position
+    width, height = bounds
+    return 0 <= x < width and 0 <= y < height
 
 
 def _choose_upgrade(state: CanonicalState) -> str | None:

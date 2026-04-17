@@ -77,12 +77,12 @@ def main() -> None:
     print(json.dumps([loop.step() for _ in range(args.ticks)], ensure_ascii=False, indent=2))
 
 
-if __name__ == "__main__":
-    main()
-
-
 class _DryRunActionSink:
     def submit(self, action: ActionEnvelope) -> dict[str, object]:
         if not action.payload:
             return {"code": 0, "errors": ["dry-run: skipped submit"]}
         return {"code": 0, "errors": [], "dry_run": True, "payload": action.payload}
+
+
+if __name__ == "__main__":
+    main()

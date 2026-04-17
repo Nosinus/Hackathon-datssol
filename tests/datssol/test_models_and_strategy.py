@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 
 from datsteam_core.runtime.loop import _extract_remaining_budget_ms
-from datsteam_core.types.core import ActionEnvelope, TickBudget
+from datsteam_core.types.core import ActionEnvelope, CanonicalEntity, CanonicalState, TickBudget
 from games.datssol.adapter import DatsSolActionSink
 from games.datssol.canonical.state import to_canonical
 from games.datssol.models.raw import ArenaResponse, CommandRequest, LogsOrError
@@ -59,3 +59,31 @@ def test_action_sink_skips_invalid_empty_payload() -> None:
 
 def test_runtime_extracts_next_turn_budget() -> None:
     assert _extract_remaining_budget_ms({"nextTurnIn": 0.81}) == 810
+
+
+def test_baseline_filters_targets_outside_map_bounds() -> None:
+    state = CanonicalState(
+        tick=1,
+        me=(CanonicalEntity(id="1", x=0, y=0),),
+        enemies=(),
+        metadata={
+            "map_size": [3, 3],
+            "settlement_limit": 10,
+            "plantations": {
+                "1": {
+                    "position": [0, 0],
+                    "is_isolated": False,
+                }
+            },
+            "mountains": [],
+        },
+    )
+
+    action = DatsSolBaselineStrategy().choose_action(state, budget=TickBudget(tick=1))
+    command = action.payload["command"][0]
+    target = command["path"][2]
+
+    assert target[0] >= 0
+    assert target[1] >= 0
+    assert target[0] < 3
+    assert target[1] < 3
