@@ -1,0 +1,1 @@
+{"timestamp": "2026-04-17T20:53:43.296046+00:00", "turnNo": 342, "nextTurnIn": 0.503, "idle": false, "submit_attempted": false, "submit_skipped_reason": "watch_mode", "action": {"command": [{"path": [[305, 247], [305, 247], [304, 247]]}]}, "result": null, "errors": [], "fallback_used": false, "main_position": [305, 247], "main_hp": 50, "isolated_count": 0, "latency_ms": 582}

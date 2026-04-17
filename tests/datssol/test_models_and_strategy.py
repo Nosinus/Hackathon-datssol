@@ -37,6 +37,47 @@ def test_logs_union_accepts_list_and_error() -> None:
     assert logs_error.errors
 
 
+def test_arena_parsing_accepts_live_uuid_ids_and_forecast_shape() -> None:
+    arena = ArenaResponse.model_validate(
+        {
+            "turnNo": 230,
+            "nextTurnIn": 0.435,
+            "size": [378, 378],
+            "actionRange": 2,
+            "plantations": [
+                {
+                    "id": "cab4e7de-6925-4491-8300-31df75f86b09",
+                    "position": [126, 110],
+                    "isMain": True,
+                    "isIsolated": False,
+                    "immunityUntilTurn": 264,
+                    "hp": 50,
+                }
+            ],
+            "enemy": [],
+            "mountains": [],
+            "cells": [],
+            "construction": [],
+            "beavers": [],
+            "plantationUpgrades": None,
+            "meteoForecasts": [
+                {
+                    "kind": "sandstorm",
+                    "id": "9f29296c-1399-4090-968f-708b3733ea64",
+                    "position": [210, 210],
+                    "forming": False,
+                    "radius": 30,
+                    "nextPosition": [211, 211],
+                }
+            ],
+        }
+    )
+
+    assert arena.plantations[0].id == "cab4e7de-6925-4491-8300-31df75f86b09"
+    assert arena.meteoForecasts[0].turnsUntil is None
+    assert arena.meteoForecasts[0].nextPosition == [211, 211]
+
+
 def test_baseline_generates_useful_command_or_upgrade() -> None:
     arena = ArenaResponse.model_validate(_load("tests/fixtures/datssol/arena_sample.json"))
     state = to_canonical(arena).state

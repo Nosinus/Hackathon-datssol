@@ -15,7 +15,7 @@ class ErrorResponse(DatsSolBaseModel):
 
 
 class Plantation(DatsSolBaseModel):
-    id: int
+    id: int | str
     position: list[int]
     isMain: bool = False
     isIsolated: bool = False
@@ -24,7 +24,7 @@ class Plantation(DatsSolBaseModel):
 
 
 class EnemyPlantation(DatsSolBaseModel):
-    id: int
+    id: int | str
     position: list[int]
     hp: int
 
@@ -41,7 +41,7 @@ class ConstructionState(DatsSolBaseModel):
 
 
 class BeaverLair(DatsSolBaseModel):
-    id: int
+    id: int | str
     position: list[int]
     hp: int
 
@@ -62,9 +62,12 @@ class PlantationUpgrades(DatsSolBaseModel):
 
 class MeteoForecast(DatsSolBaseModel):
     kind: str
-    turnsUntil: int
-    id: int | None = None
+    turnsUntil: int | None = None
+    id: int | str | None = None
     forming: bool | None = None
+    position: list[int] | None = None
+    radius: int | None = None
+    nextPosition: list[int] | None = None
 
 
 class ArenaResponse(DatsSolBaseModel):
