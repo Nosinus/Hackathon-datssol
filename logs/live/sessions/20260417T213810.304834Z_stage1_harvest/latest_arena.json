@@ -1,6 +1,6 @@
 {
-  "turnNo": 245,
-  "nextTurnIn": 0.976,
+  "turnNo": 254,
+  "nextTurnIn": 0.998,
   "size": [
     378,
     378
@@ -16,7 +16,7 @@
       "isMain": true,
       "isIsolated": false,
       "immunityUntilTurn": 243,
-      "hp": 50
+      "hp": 40
     }
   ],
   "enemy": [],
@@ -32,14 +32,14 @@
         87,
         52
       ],
-      "terraformationProgress": 25,
-      "turnsUntilDegradation": 55
+      "terraformationProgress": 70,
+      "turnsUntilDegradation": 46
     }
   ],
   "construction": [
     {
       "position": [
-        86,
+        88,
         52
       ],
       "progress": 5
@@ -49,7 +49,7 @@
   "plantationUpgrades": {
     "points": 8,
     "intervalTurns": 30,
-    "turnsUntilPoints": 25,
+    "turnsUntilPoints": 16,
     "maxPoints": 15,
     "tiers": [
       {
@@ -100,13 +100,13 @@
       "id": "257bd30d-efac-4d05-b9c7-68a98bddc558",
       "forming": false,
       "position": [
-        131,
-        247
+        140,
+        238
       ],
       "radius": 30,
       "nextPosition": [
-        132,
-        246
+        141,
+        237
       ]
     }
   ]
