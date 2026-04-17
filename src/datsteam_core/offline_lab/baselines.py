@@ -2,6 +2,11 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from datsteam_core.decision.action_shape import (
+    build_neutral_action_payload,
+    extract_command_list,
+    is_minimally_valid_action_payload,
+)
 from datsteam_core.offline_lab.policy import (
     BoundedSearch,
     CandidateGenerator,
@@ -21,22 +26,25 @@ class SafeHoldFallback:
     def fallback(self, state: CanonicalState, budget: TickBudget, reason: str) -> ActionEnvelope:
         _ = budget
         return ActionEnvelope(
-            tick=state.tick, payload={"ships": []}, reason=f"{self.reason}:{reason}"
+            tick=state.tick,
+            payload=build_neutral_action_payload(),
+            reason=f"{self.reason}:{reason}",
         )
 
 
 @dataclass(frozen=True)
 class MinimalCandidateGenerator:
-    """Game-agnostic candidate stub over generic 'ships' payload shape."""
+    """Game-agnostic candidate stub with neutral + exemplar-shaped candidates."""
 
     def generate(self, state: CanonicalState) -> list[dict[str, object]]:
         ids = [entity.id for entity in state.me]
         if not ids:
-            return [{"ships": []}]
+            return [build_neutral_action_payload()]
         return [
-            {"ships": []},
+            build_neutral_action_payload(),
             {"ships": [{"id": ship_id, "changeSpeed": 1} for ship_id in ids]},
             {"ships": [{"id": ship_id, "rotate": 90} for ship_id in ids]},
+            {"commands": [{"unit_id": ship_id, "op": "hold"} for ship_id in ids]},
         ]
 
 
@@ -45,16 +53,16 @@ class SafeGreedyEvaluator:
     """Conservative scoring that rewards non-empty legal-ish commands."""
 
     def score(self, state: CanonicalState, action: dict[str, object]) -> CandidateScore:
-        ships = action.get("ships")
+        commands = extract_command_list(action)
         base = 0.0
         features: dict[str, float] = {
-            "has_ships_field": 1.0 if isinstance(ships, list) else 0.0,
-            "ship_count": float(len(ships)) if isinstance(ships, list) else 0.0,
+            "has_command_list": 1.0 if isinstance(commands, list) else 0.0,
+            "command_count": float(len(commands)) if isinstance(commands, list) else 0.0,
             "enemy_pressure": float(len(state.enemies)),
         }
-        if isinstance(ships, list):
+        if isinstance(commands, list):
             base += 1.0
-            if ships:
+            if commands:
                 base += 0.25
         return CandidateScore(action=action, score=base, features=features)
 
@@ -64,11 +72,11 @@ class WeightedFeatureEvaluator:
     weights: dict[str, float]
 
     def score(self, state: CanonicalState, action: dict[str, object]) -> CandidateScore:
-        ships = action.get("ships")
+        commands = extract_command_list(action)
         features: dict[str, float] = {
             "bias": 1.0,
-            "has_ships_field": 1.0 if isinstance(ships, list) else 0.0,
-            "ship_count": float(len(ships)) if isinstance(ships, list) else 0.0,
+            "has_command_list": 1.0 if isinstance(commands, list) else 0.0,
+            "command_count": float(len(commands)) if isinstance(commands, list) else 0.0,
             "enemy_count": float(len(state.enemies)),
         }
         score = 0.0
@@ -136,7 +144,7 @@ class CompositeOfflinePolicy(OfflinePolicy):
                 candidate_scores=tuple(),
                 used_fallback=True,
                 timed_out=False,
-                valid_action=isinstance(action.payload.get("ships"), list),
+                valid_action=is_minimally_valid_action_payload(action.payload),
                 remaining_budget_ms=budget.deadline_ms,
             )
 
@@ -145,10 +153,10 @@ class CompositeOfflinePolicy(OfflinePolicy):
 
         action = ActionEnvelope(tick=state.tick, payload=best.action, reason=f"policy:{self.name}")
         used_fallback = False
-        if not isinstance(action.payload.get("ships"), list):
+        if not is_minimally_valid_action_payload(action.payload):
             action = self.fallback.fallback(state, budget, "invalid-action-shape")
             used_fallback = True
-        valid_action = isinstance(action.payload.get("ships"), list)
+        valid_action = is_minimally_valid_action_payload(action.payload)
 
         return DecisionRecord(
             tick=state.tick,

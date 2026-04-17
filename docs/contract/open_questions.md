@@ -14,7 +14,7 @@
 3. Sandbox vs production environment split.
 4. Constant drift risk between practice and finals.
 5. Map retrieval format (if any map endpoint/file is provided).
-6. Any server-provided replay that can be aligned with local `replay.v2` records.
+6. Any server-provided replay that can be aligned with local `replay.v3` records.
 
 ## P2 (policy/compliance)
 1. External model usage policy in live rounds.

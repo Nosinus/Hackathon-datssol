@@ -33,7 +33,12 @@ def _make_policies() -> list[CompositeOfflinePolicy]:
             name="weighted",
             generator=generator,
             evaluator=WeightedFeatureEvaluator(
-                weights={"bias": 0.0, "has_ships_field": 1.0, "ship_count": 1.0, "enemy_count": 0.0}
+                weights={
+                    "bias": 0.0,
+                    "has_command_list": 1.0,
+                    "command_count": 1.0,
+                    "enemy_count": 0.0,
+                }
             ),
             search=RolloutPlaceholderSearch(rollout_depth=1),
             fallback=fallback,
@@ -80,7 +85,7 @@ def test_beam_lite_search_returns_best_scoring_candidate_even_with_wider_beam() 
         {"ships": [{"id": "m1", "rotate": 90}]},
     ]
     evaluator = WeightedFeatureEvaluator(
-        weights={"bias": 0.0, "has_ships_field": 0.0, "ship_count": 1.0, "enemy_count": 0.0}
+        weights={"bias": 0.0, "has_command_list": 0.0, "command_count": 1.0, "enemy_count": 0.0}
     )
     # Make candidate[0] strictly better by adding one more command object.
     candidates[0] = {
@@ -131,4 +136,4 @@ def test_policy_recomputes_validity_after_fallback_replacement() -> None:
 
     assert decision.used_fallback is True
     assert decision.valid_action is True
-    assert decision.chosen_action.payload == {"ships": []}
+    assert decision.chosen_action.payload == {"commands": []}

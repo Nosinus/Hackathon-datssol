@@ -9,7 +9,12 @@ from datsteam_core.types.core import ActionEnvelope, CanonicalEntity, CanonicalS
 
 
 def test_replay_writer_creates_file(tmp_path) -> None:
-    writer = ReplayWriter(base_dir=tmp_path, session_id="s1", round_id="r1")
+    writer = ReplayWriter(
+        base_dir=tmp_path,
+        session_id="s1",
+        round_id="r1",
+        run_metadata={"run_id": "run-1", "policy_id": "safe_baseline", "session_id": "s1"},
+    )
     state = CanonicalState(
         tick=5,
         me=(CanonicalEntity(id="1", x=1, y=2),),
@@ -24,6 +29,7 @@ def test_replay_writer_creates_file(tmp_path) -> None:
     assert payload["session_id"] == "s1"
     assert payload["strategy_id"] == "baseline"
     assert payload["state_hash"]
+    assert payload["run_metadata"]["run_id"] == "run-1"
 
 
 def test_replay_writer_uses_unique_paths_per_write(tmp_path) -> None:
@@ -74,6 +80,7 @@ def test_replay_summary_supports_v3_metrics(tmp_path) -> None:
     assert summary.latency_avg_ms == 60
     assert summary.latency_p50_ms is not None
     assert summary.latency_p95_ms is not None
+    assert summary.run_ids == []
 
 
 def test_upgrade_legacy_replay_payload() -> None:

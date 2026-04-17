@@ -3,6 +3,7 @@ from __future__ import annotations
 import time
 from dataclasses import dataclass
 
+from datsteam_core.decision.action_shape import build_neutral_action_payload
 from datsteam_core.replay.store import ReplayWriter
 from datsteam_core.types.core import (
     ActionEnvelope,
@@ -33,11 +34,12 @@ class RuntimeLoop:
 
         fallback_due_to_margin = False
         if remaining_budget_ms is not None and remaining_budget_ms <= self.send_margin_ms:
-            action = ActionEnvelope(
+            margin_fallback = ActionEnvelope(
                 tick=state.tick,
-                payload={"ships": []},
+                payload=build_neutral_action_payload(),
                 reason="send_margin_safe_hold",
             )
+            action = self.action_validator.sanitize(margin_fallback, state)
             fallback_due_to_margin = True
 
         start = time.perf_counter()

@@ -37,6 +37,7 @@ class ReplayTickEnvelope:
     fallback_flags: dict[str, bool] = field(default_factory=dict)
     validation_flags: dict[str, bool] = field(default_factory=dict)
     parser_extras: dict[str, Any] = field(default_factory=dict)
+    run_metadata: dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -65,6 +66,7 @@ class ReplayTickEnvelope:
             "fallback_flags": self.fallback_flags,
             "validation_flags": self.validation_flags,
             "parser_extras": self.parser_extras,
+            "run_metadata": self.run_metadata,
         }
 
 
@@ -104,6 +106,7 @@ def from_runtime_step(
     fallback_flags: dict[str, bool] | None = None,
     validation_flags: dict[str, bool] | None = None,
     parser_extras: dict[str, Any] | None = None,
+    run_metadata: dict[str, Any] | None = None,
 ) -> ReplayTickEnvelope:
     canonical_payload = canonical_state_to_payload(state)
     return ReplayTickEnvelope(
@@ -132,6 +135,7 @@ def from_runtime_step(
         fallback_flags=fallback_flags or {},
         validation_flags=validation_flags or {},
         parser_extras=parser_extras or {},
+        run_metadata=run_metadata or {},
     )
 
 
@@ -160,4 +164,5 @@ def upgrade_legacy_record(payload: dict[str, Any]) -> ReplayTickEnvelope:
         canonical_state=canonical_state,
         chosen_action=chosen_action,
         validation_flags={"upgraded_from_legacy": True},
+        run_metadata={},
     )
